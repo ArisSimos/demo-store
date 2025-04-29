@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import ProductDetail from "./pages/ProductDetail";
 import CategoryPage from "./pages/CategoryPage";
 import CartPage from "./pages/CartPage";
+import CouponsPage from "./pages/CouponsPage";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/category/:slug" element={<CategoryPage />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/coupons" element={<CouponsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

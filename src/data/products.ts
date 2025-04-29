@@ -1,5 +1,5 @@
 
-import { Product, Category } from '@/types';
+import { Product, Category, Coupon } from '@/types';
 
 export const categories: Category[] = [
   { id: 'fiction', name: 'Fiction', slug: 'fiction' },
@@ -25,6 +25,10 @@ export const products: Product[] = [
     isbn: '9781786892720',
     pages: 304,
     format: 'paperback',
+    bulkDiscount: {
+      threshold: 3,
+      discountPercentage: 10
+    }
   },
   {
     id: '2',
@@ -41,6 +45,10 @@ export const products: Product[] = [
     isbn: '9781847941831',
     pages: 320,
     format: 'hardcover',
+    bulkDiscount: {
+      threshold: 2,
+      discountPercentage: 15
+    }
   },
   {
     id: '3',
@@ -91,6 +99,10 @@ export const products: Product[] = [
     isbn: '9780399226908',
     pages: 24,
     format: 'hardcover',
+    bulkDiscount: {
+      threshold: 5,
+      discountPercentage: 20
+    }
   },
   {
     id: '6',
@@ -145,6 +157,34 @@ export const products: Product[] = [
   }
 ];
 
+export const coupons: Coupon[] = [
+  {
+    code: 'WELCOME10',
+    discountType: 'percentage',
+    discountValue: 10,
+    minOrderValue: 20,
+  },
+  {
+    code: 'FICTION20',
+    discountType: 'percentage',
+    discountValue: 20,
+    applicableCategories: ['fiction'],
+    minOrderValue: 30,
+  },
+  {
+    code: 'AUDIO15',
+    discountType: 'percentage',
+    discountValue: 15,
+    applicableCategories: ['audiobooks'],
+  },
+  {
+    code: 'SUMMER5',
+    discountType: 'fixed',
+    discountValue: 5,
+    minOrderValue: 25,
+  }
+];
+
 export const getProductById = (id: string): Product | undefined => {
   return products.find(product => product.id === id);
 };
@@ -160,3 +200,25 @@ export const getFeaturedProducts = (): Product[] => {
 export const getCategoryById = (id: string): Category | undefined => {
   return categories.find(category => category.id === id);
 };
+
+export const validateCoupon = (code: string): Coupon | undefined => {
+  const coupon = coupons.find(c => c.code === code.toUpperCase());
+  if (!coupon) return undefined;
+  
+  // Check if coupon is expired
+  if (coupon.validUntil && new Date(coupon.validUntil) < new Date()) {
+    return undefined;
+  }
+  
+  return coupon;
+};
+
+// Calculate discount for a specific product and quantity
+export const calculateBulkDiscount = (product: Product, quantity: number): number => {
+  if (product.bulkDiscount && quantity >= product.bulkDiscount.threshold) {
+    const basePrice = product.salePrice || product.price;
+    return (basePrice * quantity * product.bulkDiscount.discountPercentage) / 100;
+  }
+  return 0;
+};
+

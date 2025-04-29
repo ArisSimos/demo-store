@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Minus, Plus, Heart, ShoppingCart, Share2 } from 'lucide-react';
+import { Minus, Plus, Heart, ShoppingCart, Share2, Percent } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
@@ -27,10 +27,26 @@ const ProductActions: React.FC<ProductActionsProps> = ({ product }) => {
     addToCart(product, quantity);
   };
 
+  // Calculate potential savings from bulk discount
+  const showBulkDiscount = product.bulkDiscount && quantity >= product.bulkDiscount.threshold;
+  const bulkDiscountAmount = showBulkDiscount
+    ? ((product.salePrice || product.price) * quantity * product.bulkDiscount!.discountPercentage) / 100
+    : 0;
+
   return (
     <div>
+      {/* Bulk discount badge */}
+      {product.bulkDiscount && (
+        <div className="mb-4 bg-primary/10 text-primary p-3 rounded-md flex items-center">
+          <Percent className="mr-2 h-5 w-5" />
+          <span>
+            Buy {product.bulkDiscount.threshold}+ and get {product.bulkDiscount.discountPercentage}% off!
+          </span>
+        </div>
+      )}
+
       {/* Quantity selector */}
-      <div className="mb-8">
+      <div className="mb-4">
         <h3 className="text-lg font-semibold mb-2">Quantity</h3>
         <div className="flex items-center">
           <button 
@@ -51,6 +67,16 @@ const ProductActions: React.FC<ProductActionsProps> = ({ product }) => {
           </button>
         </div>
       </div>
+      
+      {/* Display savings from bulk discount */}
+      {showBulkDiscount && (
+        <div className="mb-4 text-green-600">
+          <p className="flex items-center font-medium">
+            <Percent className="mr-1 h-4 w-4" />
+            Bulk Discount: Save ${bulkDiscountAmount.toFixed(2)}
+          </p>
+        </div>
+      )}
       
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-4">

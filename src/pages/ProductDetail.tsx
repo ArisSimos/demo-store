@@ -14,6 +14,7 @@ import ProductDetails from '@/components/product/ProductDetails';
 import ProductActions from '@/components/product/ProductActions';
 import RelatedProducts from '@/components/product/RelatedProducts';
 import ProductNotFound from '@/components/product/ProductNotFound';
+import ProductReviews from '@/components/product/ProductReviews';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -51,6 +52,9 @@ const ProductDetail: React.FC = () => {
               <ProductActions product={product} />
             </div>
           </div>
+          
+          {/* Reviews */}
+          <ProductReviews productId={product.id} />
           
           {/* Related products */}
           <RelatedProducts products={relatedProducts} />

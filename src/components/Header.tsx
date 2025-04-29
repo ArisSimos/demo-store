@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Menu, X, Search, BookOpen } from 'lucide-react';
+import { ShoppingCart, Menu, X, Search, BookOpen, Ticket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCart } from '@/context/CartContext';
@@ -42,6 +42,10 @@ const Header: React.FC = () => {
                 ))}
               </div>
             </div>
+            <Link to="/coupons" className="text-sm font-medium hover:text-primary flex items-center">
+              <Ticket className="h-4 w-4 mr-1" />
+              Deals & Coupons
+            </Link>
             <Link to="/about" className="text-sm font-medium hover:text-primary">
               About
             </Link>
@@ -116,6 +120,13 @@ const Header: React.FC = () => {
                   ))}
                 </div>
               </div>
+              <Link to="/coupons"
+                className="py-2 text-sm font-medium flex items-center"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Ticket className="h-4 w-4 mr-1" />
+                Deals & Coupons
+              </Link>
               <Link to="/about" 
                 className="py-2 text-sm font-medium"
                 onClick={() => setMobileMenuOpen(false)}
