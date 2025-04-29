@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Menu, X, Search } from 'lucide-react';
+import { ShoppingCart, Menu, X, Search, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCart } from '@/context/CartContext';
@@ -17,8 +17,8 @@ const Header: React.FC = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <ShoppingCart className="h-6 w-6 text-primary mr-2" />
-            <span className="font-bold text-xl">EShopify</span>
+            <BookOpen className="h-6 w-6 text-primary mr-2" />
+            <span className="font-bold text-xl">BookHaven</span>
           </Link>
           
           {/* Desktop Navigation */}
@@ -55,7 +55,7 @@ const Header: React.FC = () => {
             <div className="hidden sm:flex relative w-full max-w-[200px]">
               <Input
                 type="search"
-                placeholder="Search products..."
+                placeholder="Search books..."
                 className="pr-8"
               />
               <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -90,7 +90,7 @@ const Header: React.FC = () => {
               <div className="relative w-full my-2">
                 <Input
                   type="search"
-                  placeholder="Search products..."
+                  placeholder="Search books..."
                   className="pr-8 w-full"
                 />
                 <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />

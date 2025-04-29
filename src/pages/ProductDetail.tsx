@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Minus, Plus, Heart, Share2, ShoppingCart, ArrowLeft } from 'lucide-react';
+import { Minus, Plus, Heart, Share2, ShoppingCart, ArrowLeft, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -22,8 +22,8 @@ const ProductDetail: React.FC = () => {
       <div className="min-h-screen flex flex-col">
         <Header />
         <div className="container mx-auto px-4 py-16 flex-grow flex flex-col items-center justify-center">
-          <h1 className="text-3xl font-bold mb-4">Product Not Found</h1>
-          <p className="text-gray-600 mb-6">The product you're looking for doesn't exist.</p>
+          <h1 className="text-3xl font-bold mb-4">Book Not Found</h1>
+          <p className="text-gray-600 mb-6">The book you're looking for doesn't exist.</p>
           <Button asChild>
             <Link to="/">Return to Home</Link>
           </Button>
@@ -81,9 +81,9 @@ const ProductDetail: React.FC = () => {
             asChild
             className="mb-4 md:hidden"
           >
-            <Link to="/products">
+            <Link to="/">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Products
+              Back to Books
             </Link>
           </Button>
           
@@ -106,7 +106,16 @@ const ProductDetail: React.FC = () => {
                     {category.name}
                   </span>
                 )}
+                {product.format === 'audiobook' && (
+                  <span className="ml-2 bg-primary/10 text-primary px-2 py-1 rounded-md text-xs font-bold inline-flex items-center">
+                    <BookOpen size={12} className="mr-1" />
+                    AUDIOBOOK
+                  </span>
+                )}
                 <h1 className="text-3xl font-bold mt-2">{product.name}</h1>
+                {product.author && (
+                  <p className="text-lg text-muted-foreground mt-1">by {product.author}</p>
+                )}
                 <div className="flex items-baseline mt-4">
                   {product.salePrice ? (
                     <>
@@ -120,6 +129,52 @@ const ProductDetail: React.FC = () => {
                     <span className="text-3xl font-bold">${product.price.toFixed(2)}</span>
                   )}
                 </div>
+              </div>
+              
+              {/* Book details */}
+              <div className="mb-6 grid grid-cols-2 gap-4">
+                {product.publisher && (
+                  <div>
+                    <span className="text-sm text-muted-foreground">Publisher:</span>
+                    <p>{product.publisher}</p>
+                  </div>
+                )}
+                {product.publicationDate && (
+                  <div>
+                    <span className="text-sm text-muted-foreground">Publication Date:</span>
+                    <p>{product.publicationDate}</p>
+                  </div>
+                )}
+                {product.isbn && (
+                  <div>
+                    <span className="text-sm text-muted-foreground">ISBN:</span>
+                    <p>{product.isbn}</p>
+                  </div>
+                )}
+                {product.pages && (
+                  <div>
+                    <span className="text-sm text-muted-foreground">Pages:</span>
+                    <p>{product.pages}</p>
+                  </div>
+                )}
+                {product.format && (
+                  <div>
+                    <span className="text-sm text-muted-foreground">Format:</span>
+                    <p className="capitalize">{product.format}</p>
+                  </div>
+                )}
+                {product.duration && (
+                  <div>
+                    <span className="text-sm text-muted-foreground">Duration:</span>
+                    <p>{product.duration}</p>
+                  </div>
+                )}
+                {product.narrator && (
+                  <div>
+                    <span className="text-sm text-muted-foreground">Narrator:</span>
+                    <p>{product.narrator}</p>
+                  </div>
+                )}
               </div>
               
               {/* Status */}
@@ -188,7 +243,7 @@ const ProductDetail: React.FC = () => {
           {/* Related products */}
           {relatedProducts.length > 0 && (
             <div>
-              <h2 className="text-2xl font-bold mb-6">Related Products</h2>
+              <h2 className="text-2xl font-bold mb-6">Related Books</h2>
               <div className="product-grid">
                 {relatedProducts.map(product => (
                   <ProductCard key={product.id} product={product} />
