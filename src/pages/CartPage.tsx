@@ -1,20 +1,20 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Ticket } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
-import CartItem from '@/components/CartItem';
+import CartItem from '@/components/cart/CartItem';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { validateCoupon } from '@/data/products';
 import { useState } from 'react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 const CartPage: React.FC = () => {
-  const { cartItems, clearCart, removeItem, updateQuantity, getTotalPrice } = useCart();
+  const { items, clearCart, removeFromCart, updateQuantity, subtotal, grandTotal, applyCoupon } = useCart();
   const [couponCode, setCouponCode] = useState('');
-  const [discount, setDiscount] = useState(0);
   const [couponError, setCouponError] = useState('');
   const { toast } = useToast();
 
@@ -22,27 +22,24 @@ const CartPage: React.FC = () => {
     const coupon = validateCoupon(couponCode);
     if (coupon) {
       setCouponError('');
+      applyCoupon(coupon);
+      
       if (coupon.discountType === 'percentage') {
-        setDiscount(coupon.discountValue);
         toast({
           title: "Coupon Applied!",
           description: `You got ${coupon.discountValue}% off!`,
-        })
+        });
       } else if (coupon.discountType === 'fixed') {
-        setDiscount(coupon.discountValue);
         toast({
           title: "Coupon Applied!",
           description: `You got $${coupon.discountValue} off!`,
-        })
+        });
       }
     } else {
-      setDiscount(0);
+      applyCoupon(null);
       setCouponError('Invalid coupon code');
     }
   };
-
-  const totalPrice = getTotalPrice();
-  const discountedPrice = totalPrice - (totalPrice * discount) / 100;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -50,7 +47,7 @@ const CartPage: React.FC = () => {
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-8">
           <h1 className="text-2xl font-bold mb-4">Shopping Cart</h1>
-          {cartItems.length === 0 ? (
+          {items.length === 0 ? (
             <div className="text-center py-12">
               <h3 className="text-lg font-medium mb-2">Your cart is empty</h3>
               <p className="text-gray-600 mb-6">
@@ -64,15 +61,17 @@ const CartPage: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Cart Items */}
               <div className="lg:col-span-2">
-                {cartItems.map((item) => (
+                {items.map((item) => (
                   <CartItem
                     key={item.product.id}
                     item={item}
-                    removeItem={removeItem}
+                    removeFromCart={removeFromCart}
                     updateQuantity={updateQuantity}
                   />
                 ))}
-                <Button variant="destructive" onClick={() => clearCart()}>Clear Cart</Button>
+                <Button variant="destructive" onClick={() => clearCart()} className="mt-4">
+                  Clear Cart
+                </Button>
               </div>
 
               {/* Order Summary */}
@@ -82,12 +81,16 @@ const CartPage: React.FC = () => {
                 <div className="mb-4">
                   <div className="flex justify-between mb-2">
                     <span className="text-gray-700">Subtotal:</span>
-                    <span className="font-semibold">${totalPrice.toFixed(2)}</span>
+                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-gray-700">Discount:</span>
-                    <span className="font-semibold">-{discount}%</span>
-                  </div>
+                  {subtotal !== grandTotal && (
+                    <div className="flex justify-between mb-2">
+                      <span className="text-gray-700">Discount:</span>
+                      <span className="font-semibold text-green-600">
+                        -${(subtotal - grandTotal).toFixed(2)}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between mb-2">
                     <span className="text-gray-700">Shipping:</span>
                     <span className="font-semibold">Free</span>
@@ -95,7 +98,7 @@ const CartPage: React.FC = () => {
                   <hr className="my-2" />
                   <div className="flex justify-between">
                     <span className="text-gray-700 font-semibold">Total:</span>
-                    <span className="font-bold text-xl">${discountedPrice.toFixed(2)}</span>
+                    <span className="font-bold text-xl">${grandTotal.toFixed(2)}</span>
                   </div>
                 </div>
 
