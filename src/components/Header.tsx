@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCart } from '@/context/CartContext';
 import { categories } from '@/data/products';
+import UserMenu from '@/components/UserMenu';
 
 const Header: React.FC = () => {
   const { totalItems } = useCart();
@@ -54,7 +55,7 @@ const Header: React.FC = () => {
             </Link>
           </nav>
           
-          {/* Search, Cart & Mobile Menu Button */}
+          {/* Search, Cart, User Menu & Mobile Menu Button */}
           <div className="flex items-center space-x-4">
             <div className="hidden sm:flex relative w-full max-w-[200px]">
               <Input
@@ -73,6 +74,8 @@ const Header: React.FC = () => {
                 </span>
               )}
             </Link>
+            
+            <UserMenu />
             
             <Button
               variant="ghost"
