@@ -1,22 +1,47 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, BookOpen } from 'lucide-react';
+import { ShoppingCart, BookOpen, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
+import { useWishlist } from '@/context/WishlistContext';
 import { getCategoryById } from '@/data/productService';
 
 interface ProductCardProps {
   product: Product;
+  showWishlistButton?: boolean;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, showWishlistButton = true }) => {
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const category = getCategoryById(product.category);
   
+  const handleWishlistToggle = () => {
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
+  };
+  
   return (
-    <div className="product-card">
+    <div className="product-card relative">
+      {showWishlistButton && (
+        <button 
+          className="absolute top-2 right-2 z-10 bg-white/80 p-1.5 rounded-full hover:bg-white transition-colors"
+          onClick={(e) => {
+            e.preventDefault();
+            handleWishlistToggle();
+          }}
+        >
+          <Heart 
+            className={`h-5 w-5 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-500'}`} 
+          />
+        </button>
+      )}
+      
       <Link to={`/product/${product.id}`}>
         <div className="relative overflow-hidden">
           <img 
@@ -25,7 +50,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             className="product-image h-64 w-full object-cover"
           />
           {product.salePrice && (
-            <div className="absolute top-2 right-2 bg-destructive text-destructive-foreground px-2 py-1 rounded-md text-xs font-bold">
+            <div className="absolute top-2 left-2 bg-destructive text-destructive-foreground px-2 py-1 rounded-md text-xs font-bold">
               SALE
             </div>
           )}
