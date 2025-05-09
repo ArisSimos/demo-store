@@ -1,16 +1,28 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Search, BookOpen, Ticket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCart } from '@/context/CartContext';
 import { categories } from '@/data/products';
 import UserMenu from '@/components/UserMenu';
+import HeaderNavItems from '@/components/HeaderNavItems';
 
 const Header: React.FC = () => {
   const { totalItems } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
+  
+  const handleSearch = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+      setSearchTerm('');
+      setMobileMenuOpen(false);
+    }
+  };
   
   return (
     <header className="sticky top-0 z-30 w-full bg-background border-b shadow-sm">
@@ -43,6 +55,7 @@ const Header: React.FC = () => {
                 ))}
               </div>
             </div>
+            <HeaderNavItems />
             <Link to="/coupons" className="text-sm font-medium hover:text-primary flex items-center">
               <Ticket className="h-4 w-4 mr-1" />
               Deals & Coupons
@@ -57,14 +70,18 @@ const Header: React.FC = () => {
           
           {/* Search, Cart, User Menu & Mobile Menu Button */}
           <div className="flex items-center space-x-4">
-            <div className="hidden sm:flex relative w-full max-w-[200px]">
+            <form onSubmit={handleSearch} className="hidden sm:flex relative w-full max-w-[200px]">
               <Input
                 type="search"
                 placeholder="Search books..."
                 className="pr-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            </div>
+              <button type="submit" className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                <Search className="h-4 w-4 text-muted-foreground" />
+              </button>
+            </form>
             
             <Link to="/cart" className="relative">
               <ShoppingCart className="h-6 w-6" />
@@ -94,14 +111,18 @@ const Header: React.FC = () => {
         <div className="md:hidden border-t">
           <div className="container mx-auto px-4 py-2">
             <div className="flex flex-col space-y-3">
-              <div className="relative w-full my-2">
+              <form onSubmit={handleSearch} className="relative w-full my-2">
                 <Input
                   type="search"
                   placeholder="Search books..."
                   className="pr-8 w-full"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              </div>
+                <button type="submit" className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <Search className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </form>
               <Link to="/" 
                 className="py-2 text-sm font-medium"
                 onClick={() => setMobileMenuOpen(false)}
@@ -129,6 +150,24 @@ const Header: React.FC = () => {
               >
                 <Ticket className="h-4 w-4 mr-1" />
                 Deals & Coupons
+              </Link>
+              <Link to="/reading-lists" 
+                className="py-2 text-sm font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Reading Lists
+              </Link>
+              <Link to="/bundles" 
+                className="py-2 text-sm font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Book Bundles
+              </Link>
+              <Link to="/wishlist" 
+                className="py-2 text-sm font-medium"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Wishlist
               </Link>
               <Link to="/about" 
                 className="py-2 text-sm font-medium"

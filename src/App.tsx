@@ -23,6 +23,7 @@ import BookBundlesPage from "./pages/BookBundlesPage";
 import AuthorPage from "./pages/AuthorPage";
 import ReadingListsPage from "./pages/ReadingListsPage";
 import ReadingListDetailPage from "./pages/ReadingListDetailPage";
+import SearchPage from "./pages/SearchPage";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,7 @@ const App = () => (
                 <Route path="/author/:slug" element={<AuthorPage />} />
                 <Route path="/reading-lists" element={<ReadingListsPage />} />
                 <Route path="/reading-list/:id" element={<ReadingListDetailPage />} />
+                <Route path="/search" element={<SearchPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
