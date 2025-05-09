@@ -3,7 +3,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { getProductById, getCategoryById, getProductsByCategory } from '@/data/products';
+import { getProductById, getCategoryById, getProductsByCategory } from '@/data/productService';
 
 // Import smaller components
 import ProductBreadcrumb from '@/components/product/ProductBreadcrumb';

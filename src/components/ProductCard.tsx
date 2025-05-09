@@ -5,7 +5,7 @@ import { ShoppingCart, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
-import { getCategoryById } from '@/data/products';
+import { getCategoryById } from '@/data/productService';
 
 interface ProductCardProps {
   product: Product;
