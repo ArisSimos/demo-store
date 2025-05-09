@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Package, Users, Book, ShoppingCart } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 const AdminDashboardStats = () => {
   return (
