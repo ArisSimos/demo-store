@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -6,6 +5,7 @@ import Footer from '@/components/Footer';
 import SearchBox from '@/components/search/SearchBox';
 import SearchFilters from '@/components/search/SearchFilters';
 import ProductCard from '@/components/ProductCard';
+import { Button } from '@/components/ui/button';
 import { getAllProducts, getAllCategories } from '@/data/productService';
 import { Product } from '@/types';
 import RecommendedBooks from '@/components/RecommendedBooks';

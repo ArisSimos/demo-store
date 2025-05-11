@@ -32,17 +32,16 @@ const ProductDetail: React.FC = () => {
           <div className="mb-4">
             <BackButton />
             <ProductBreadcrumb 
-              category={category?.name || ''} 
-              categorySlug={category?.slug || ''} 
+              category={category}
               productName={product.name} 
             />
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            <ProductImageContainer image={product.image} name={product.name} />
+            <ProductImageContainer src={product.image} alt={product.name} />
             
             <div>
-              <ProductInfo product={product} />
+              <ProductInfo product={product} category={category} />
               <ProductActions product={product} />
             </div>
           </div>
