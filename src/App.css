@@ -1,42 +1,63 @@
+
+body {
+  min-height: 100vh;
+  background-color: #faf8f3;
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.book-spine {
+  position: relative;
+  background: linear-gradient(to right, #8B4513, #A0522D);
+  box-shadow: 2px 0 4px rgba(0,0,0,0.3);
+  width: 30px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.book-spine::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 0;
+  right: 0;
+  bottom: 10%;
+  background: linear-gradient(to bottom, 
+    transparent 0%, 
+    rgba(255,255,255,0.1) 10%,
+    transparent 20%,
+    transparent 80%,
+    rgba(255,255,255,0.1) 90%,
+    transparent 100%
+  );
+}
+
+.reading-lamp {
+  box-shadow: 0 0 30px 15px rgba(255, 220, 150, 0.4);
+}
+
+@keyframes page-turn {
+  0% {
+    transform: rotateY(0);
   }
-  to {
-    transform: rotate(360deg);
+  100% {
+    transform: rotateY(-15deg);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.hover-book:hover .book-cover {
+  animation: page-turn 0.5s ease-out forwards;
 }
 
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+.bookshelf {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 20px,
+    rgba(112, 66, 20, 0.1) 20px,
+    rgba(112, 66, 20, 0.1) 22px
+  );
 }

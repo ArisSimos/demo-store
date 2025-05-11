@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -18,6 +19,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'serif': ['"Playfair Display"', 'Georgia', 'serif'],
+				'sans': ['"Source Sans Pro"', 'system-ui', 'sans-serif']
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -89,6 +94,10 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
+			},
+			backgroundImage: {
+				'wood-pattern': "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgdmlld0JveD0iMCAwIDUwIDUwIj4KICA8cGF0aCBmaWxsPSJyZ2JhKDE0NSwgOTUsIDQ1LCAwLjEpIiBkPSJNMCAwaDUwdjUwSDBWMHptMjUgMjVjMCAwIDcuMTUgMCAxMi41LTIuNVM1MCAyMCA1MCAyMHYxMHMtNy4xNSAwLTEyLjUtMi41UzI1IDI1IDI1IDI1cy03LjE1IDAtMTIuNSAyLjVTMCAzMCAwIDMwVjIwczYuMzcgMCAxMi41IDIuNVMyNSAyNSAyNSAyNXoiLz4KPC9zdmc+')",
+				'subtle-paper': "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj4KICA8cmVjdCBmaWxsPSIjZmZmZmZmIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiLz4KICA8cGF0aCBmaWxsPSIjZjVmNGYwIiBkPSJNMCAwaDEwdjEwSDB6bTEwIDEwaDEwdjEwSDEwem0tMTAgMTBoMTB2MTBIMHptMjAgMGgxMHYxMGgtMTB6Ii8+Cjwvc3ZnPg==')",
 			}
 		}
 	},
