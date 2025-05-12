@@ -4,6 +4,7 @@ import { CartItem as CartItemType } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Trash2, Plus, Minus } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface CartItemProps {
   item: CartItemType;
@@ -24,6 +25,35 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart, updateQuantit
     if (quantity > 1) {
       updateQuantity(product.id, quantity - 1);
     }
+  };
+  
+  const handleRemove = () => {
+    // Show confirmation toast instead of removing immediately
+    toast((t) => (
+      <div className="flex flex-col space-y-2">
+        <p>Remove "{product.name}" from cart?</p>
+        <div className="flex justify-end space-x-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => toast.dismiss(t.id)}
+          >
+            Cancel
+          </Button>
+          <Button 
+            variant="destructive" 
+            size="sm"
+            onClick={() => {
+              removeFromCart(product.id);
+              toast.dismiss(t.id);
+              toast.success("Item removed from cart");
+            }}
+          >
+            Remove
+          </Button>
+        </div>
+      </div>
+    ));
   };
   
   return (
@@ -57,6 +87,8 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart, updateQuantit
             onClick={handleDecrement} 
             disabled={quantity <= 1}
             className="h-8 w-8"
+            title="Decrease quantity"
+            aria-label="Decrease quantity"
           >
             <Minus className="h-4 w-4" />
           </Button>
@@ -66,6 +98,8 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart, updateQuantit
             size="icon" 
             onClick={handleIncrement}
             className="h-8 w-8"
+            title="Increase quantity"
+            aria-label="Increase quantity"
           >
             <Plus className="h-4 w-4" />
           </Button>
@@ -76,8 +110,10 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart, updateQuantit
           <Button 
             variant="ghost" 
             size="icon" 
-            onClick={() => removeFromCart(product.id)} 
+            onClick={handleRemove} 
             className="text-red-500 hover:text-red-700 h-8 w-8"
+            title="Remove from cart"
+            aria-label="Remove from cart"
           >
             <Trash2 className="h-4 w-4" />
           </Button>

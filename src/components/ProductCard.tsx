@@ -1,12 +1,13 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, BookOpen, Heart } from 'lucide-react';
+import { ShoppingCart, BookOpen, Heart, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { getCategoryById } from '@/data/productService';
+import { toast } from 'sonner';
 
 interface ProductCardProps {
   product: Product;
@@ -14,20 +15,35 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, showWishlistButton = true }) => {
-  const { addToCart } = useCart();
+  const { addToCart, isInCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const category = getCategoryById(product.category);
+  const [isAdding, setIsAdding] = React.useState(false);
   
   const handleWishlistToggle = () => {
     if (isInWishlist(product.id)) {
       removeFromWishlist(product.id);
+      toast.success(`${product.name} removed from wishlist`);
     } else {
       addToWishlist(product);
+      toast.success(`${product.name} added to wishlist`);
     }
   };
+
+  const handleAddToCart = () => {
+    setIsAdding(true);
+    addToCart(product);
+    toast.success(`${product.name} added to cart`);
+    
+    setTimeout(() => {
+      setIsAdding(false);
+    }, 1000);
+  };
+  
+  const productInCart = isInCart ? isInCart(product.id) : false;
   
   return (
-    <div className="product-card relative">
+    <div className="product-card relative group">
       {showWishlistButton && (
         <button 
           className="absolute top-2 right-2 z-10 bg-white/80 p-1.5 rounded-full hover:bg-white transition-colors"
@@ -35,6 +51,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showWishlistButton =
             e.preventDefault();
             handleWishlistToggle();
           }}
+          aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
+          title={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
         >
           <Heart 
             className={`h-5 w-5 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-500'}`} 
@@ -42,12 +60,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showWishlistButton =
         </button>
       )}
       
-      <Link to={`/product/${product.id}`}>
+      <Link to={`/product/${product.id}`} className="block h-full">
         <div className="relative overflow-hidden">
           <img 
             src={product.image} 
             alt={product.name} 
-            className="product-image h-64 w-full object-cover"
+            className="product-image h-64 w-full object-cover transform transition-transform duration-300 group-hover:scale-105"
           />
           {product.salePrice && (
             <div className="absolute top-2 left-2 bg-destructive text-destructive-foreground px-2 py-1 rounded-md text-xs font-bold">
@@ -87,13 +105,28 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showWishlistButton =
       </Link>
       <div className="px-4 pb-4">
         <Button 
-          variant="default" 
-          className="btn-cart w-full"
-          onClick={() => addToCart(product)}
-          disabled={!product.inStock}
+          variant={productInCart ? "secondary" : "default"}
+          className={`btn-cart w-full transition-all ${isAdding ? 'bg-green-600' : ''}`}
+          onClick={handleAddToCart}
+          disabled={!product.inStock || isAdding}
+          aria-label={product.inStock ? "Add to Cart" : "Out of Stock"}
         >
-          <ShoppingCart size={16} className="mr-2" />
-          {product.inStock ? "Add to Cart" : "Out of Stock"}
+          {isAdding ? (
+            <>
+              <Check size={16} className="animate-bounce" />
+              Added!
+            </>
+          ) : productInCart ? (
+            <>
+              <ShoppingCart size={16} className="mr-2" />
+              In Cart
+            </>
+          ) : (
+            <>
+              <ShoppingCart size={16} className="mr-2" />
+              {product.inStock ? "Add to Cart" : "Out of Stock"}
+            </>
+          )}
         </Button>
       </div>
     </div>
