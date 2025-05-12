@@ -29,21 +29,21 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex items-center shrink-0 mr-4">
             <BookOpen className="h-6 w-6 text-primary mr-2" />
             <span className="font-bold text-xl">BookHaven</span>
           </Link>
           
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="text-sm font-medium hover:text-primary">
+          <nav className="hidden md:flex items-center space-x-6 flex-grow">
+            <Link to="/" className="text-sm font-medium hover:text-primary whitespace-nowrap">
               Home
             </Link>
             <div className="relative group">
-              <button className="text-sm font-medium hover:text-primary flex items-center">
+              <button className="text-sm font-medium hover:text-primary flex items-center whitespace-nowrap">
                 Categories
               </button>
-              <div className="absolute left-0 top-full mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+              <div className="absolute left-0 top-full mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                 {categories.map((category) => (
                   <Link
                     key={category.id}
@@ -56,21 +56,21 @@ const Header: React.FC = () => {
               </div>
             </div>
             <HeaderNavItems />
-            <Link to="/coupons" className="text-sm font-medium hover:text-primary flex items-center">
+            <Link to="/coupons" className="text-sm font-medium hover:text-primary flex items-center whitespace-nowrap">
               <Ticket className="h-4 w-4 mr-1" />
               Deals & Coupons
             </Link>
-            <Link to="/about" className="text-sm font-medium hover:text-primary">
+            <Link to="/about" className="text-sm font-medium hover:text-primary whitespace-nowrap">
               About
             </Link>
-            <Link to="/contact" className="text-sm font-medium hover:text-primary">
+            <Link to="/contact" className="text-sm font-medium hover:text-primary whitespace-nowrap">
               Contact
             </Link>
           </nav>
           
           {/* Search, Cart, User Menu & Mobile Menu Button */}
-          <div className="flex items-center space-x-4">
-            <form onSubmit={handleSearch} className="hidden sm:flex relative w-full max-w-[200px]">
+          <div className="flex items-center space-x-4 shrink-0">
+            <form onSubmit={handleSearch} className="hidden sm:flex relative max-w-[200px]">
               <Input
                 type="search"
                 placeholder="Search books..."
