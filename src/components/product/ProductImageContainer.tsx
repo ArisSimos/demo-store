@@ -9,17 +9,28 @@ export interface ProductImageContainerProps {
 
 const ProductImageContainer: React.FC<ProductImageContainerProps> = ({ src, alt }) => {
   return (
-    <div className="relative">
-      <div className="absolute top-0 left-0 bottom-0 w-[12px] bg-gradient-to-r from-amber-800 to-amber-700 shadow-inner z-10"></div>
-      <div className="bg-muted/30 rounded-lg overflow-hidden border border-amber-200 shadow-md pl-2">
-        <AspectRatio ratio={3/4} className="w-full">
-          <img 
-            src={src} 
-            alt={alt} 
-            className="object-contain w-full h-full" 
-          />
-        </AspectRatio>
+    <div className="relative hover-book">
+      <div className="flex">
+        <div className="book-spine relative h-full z-10 rounded-l-sm overflow-hidden">
+          <div className="absolute inset-0 opacity-20">
+            {/* Book spine texture */}
+            <div className="h-full w-full bg-gradient-to-b from-amber-800/20 via-transparent to-amber-800/20"></div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-r-lg overflow-hidden border border-amber-200 shadow-md book-cover transform origin-left transition-transform duration-300">
+          <AspectRatio ratio={3/4} className="w-full">
+            <img 
+              src={src} 
+              alt={alt} 
+              className="object-contain w-full h-full" 
+            />
+          </AspectRatio>
+        </div>
       </div>
+      
+      {/* Book shadow effect */}
+      <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-[90%] h-4 bg-black/10 blur-md rounded-full"></div>
     </div>
   );
 };
