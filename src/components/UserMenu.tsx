@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { User, LogOut, ShieldCheck } from "lucide-react";
+import { User, LogOut, ShieldCheck, BookHeart, Book, Users } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import {
   DropdownMenu,
@@ -50,6 +50,29 @@ const UserMenu = () => {
             <p className="text-xs text-muted-foreground">{user?.email}</p>
           </div>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem asChild>
+          <Link to="/bookshelf" className="flex w-full cursor-pointer items-center">
+            <Book className="mr-2 h-4 w-4" />
+            My Bookshelf
+          </Link>
+        </DropdownMenuItem>
+        
+        <DropdownMenuItem asChild>
+          <Link to="/wishlist" className="flex w-full cursor-pointer items-center">
+            <BookHeart className="mr-2 h-4 w-4" />
+            My Wishlist
+          </Link>
+        </DropdownMenuItem>
+        
+        <DropdownMenuItem asChild>
+          <Link to="/book-clubs" className="flex w-full cursor-pointer items-center">
+            <Users className="mr-2 h-4 w-4" />
+            Book Clubs
+          </Link>
+        </DropdownMenuItem>
+        
         <DropdownMenuSeparator />
         
         {user?.isAdmin && (

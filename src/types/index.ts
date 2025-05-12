@@ -47,3 +47,41 @@ export interface Coupon {
   applicableProducts?: string[]; // Product IDs or undefined for all products
 }
 
+export interface ReadingProgress {
+  bookId: string;
+  currentPage: number;
+  totalPages: number;
+  startDate: string;
+  lastReadDate: string;
+  completed: boolean;
+  notes?: string[];
+}
+
+export interface BookClub {
+  id: string;
+  name: string;
+  description: string;
+  members: number;
+  currentBook: string; // Product ID
+  nextMeetingDate: string;
+  isPublic: boolean;
+  discussions: BookClubDiscussion[];
+}
+
+export interface BookClubDiscussion {
+  id: string;
+  title: string;
+  content: string;
+  author: string;
+  authorId: string;
+  createdAt: string;
+  comments: BookClubComment[];
+}
+
+export interface BookClubComment {
+  id: string;
+  content: string;
+  author: string;
+  authorId: string;
+  createdAt: string;
+}
