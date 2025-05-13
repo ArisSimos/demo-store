@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
-import { Package, Users, Book, ShoppingCart, Grid } from "lucide-react";
+import { Package, Users, Book, Coupon, Trash2, ShoppingCart, Grid, Calendar } from "lucide-react";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -10,6 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AdminDashboardStats from "@/components/admin/AdminDashboardStats";
 import AdminProductsList from "@/components/admin/AdminProductsList";
+import AdminBookClubsList from "@/components/admin/AdminBookClubsList";
+import AdminCouponsList from "@/components/admin/AdminCouponsList";
 
 const AdminDashboard = () => {
   const { user, isAuthenticated } = useAuth();
@@ -39,6 +41,14 @@ const AdminDashboard = () => {
                 <Book className="mr-2 h-4 w-4" />
                 Products
               </TabsTrigger>
+              <TabsTrigger value="book-clubs" className="flex items-center">
+                <Users className="mr-2 h-4 w-4" />
+                Book Clubs
+              </TabsTrigger>
+              <TabsTrigger value="coupons" className="flex items-center">
+                <Coupon className="mr-2 h-4 w-4" />
+                Coupons
+              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="dashboard">
@@ -47,6 +57,14 @@ const AdminDashboard = () => {
             
             <TabsContent value="products">
               <AdminProductsList />
+            </TabsContent>
+
+            <TabsContent value="book-clubs">
+              <AdminBookClubsList />
+            </TabsContent>
+            
+            <TabsContent value="coupons">
+              <AdminCouponsList />
             </TabsContent>
           </Tabs>
         </div>
