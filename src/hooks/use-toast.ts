@@ -1,5 +1,5 @@
 
-import { toast as sonnerToast, type Toast as SonnerToast } from "sonner";
+import { toast as sonnerToast } from "sonner";
 
 type ToastOptions = {
   description?: string;
@@ -9,11 +9,8 @@ type ToastOptions = {
 
 export const useToast = () => {
   return {
-    toast: (options: SonnerToast | string | ToastOptions) => {
+    toast: (options: ToastOptions | string) => {
       if (typeof options === 'string') {
-        return sonnerToast(options);
-      } else if ('title' in options) {
-        // It's a SonnerToast object
         return sonnerToast(options);
       } else {
         // It's our custom ToastOptions
