@@ -17,6 +17,7 @@ interface CartContextType {
   couponDiscount: number;
   bulkDiscountTotal: number;
   grandTotal: number;
+  isInCart: (productId: string) => boolean; // Add isInCart method to interface
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -128,6 +129,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const applyCoupon = (coupon: Coupon | null) => {
     setAppliedCoupon(coupon);
   };
+
+  // Add isInCart method implementation
+  const isInCart = (productId: string): boolean => {
+    return items.some(item => item.product.id === productId);
+  };
   
   const totalItems = items.reduce((total, item) => total + item.quantity, 0);
   
@@ -168,7 +174,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     applyCoupon,
     couponDiscount: finalCouponDiscount,
     bulkDiscountTotal,
-    grandTotal
+    grandTotal,
+    isInCart // Add isInCart to the context value
   };
   
   return (

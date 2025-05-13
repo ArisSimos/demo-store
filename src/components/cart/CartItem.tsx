@@ -28,15 +28,15 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart, updateQuantit
   };
   
   const handleRemove = () => {
-    // Show confirmation toast instead of removing immediately
-    toast((t) => (
+    // Show confirmation toast using the proper typing for Sonner
+    toast(
       <div className="flex flex-col space-y-2">
         <p>Remove "{product.name}" from cart?</p>
         <div className="flex justify-end space-x-2">
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={() => toast.dismiss(t.id)}
+            onClick={() => toast.dismiss()}
           >
             Cancel
           </Button>
@@ -45,7 +45,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart, updateQuantit
             size="sm"
             onClick={() => {
               removeFromCart(product.id);
-              toast.dismiss(t.id);
+              toast.dismiss();
               toast.success("Item removed from cart");
             }}
           >
@@ -53,7 +53,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart, updateQuantit
           </Button>
         </div>
       </div>
-    ));
+    );
   };
   
   return (
