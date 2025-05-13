@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 interface ProductActionsProps {
   product: Product;
@@ -44,16 +44,14 @@ const ProductActions: React.FC<ProductActionsProps> = ({ product }) => {
         text: `Check out ${product.name} on BookHaven!`,
         url: window.location.href,
       }).catch(err => {
-        toast({
-          title: "Sharing failed",
+        toast("Sharing failed", {
           description: "Could not share this product."
         });
       });
     } else {
       // Fallback for browsers that don't support navigator.share
       navigator.clipboard.writeText(window.location.href);
-      toast({
-        title: "Link copied!",
+      toast("Link copied!", {
         description: "Product link copied to clipboard."
       });
     }

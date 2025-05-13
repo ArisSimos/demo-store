@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Search, Trash2, Plus, Ticket } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -30,7 +29,7 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 // Sample coupon data structure (replace with your actual data)
 interface Coupon {
@@ -97,9 +96,8 @@ const AdminCouponsList = () => {
     if (couponToDelete) {
       // In a real application, you would call an API to delete the coupon
       setCoupons(coupons.filter(c => c.id !== couponToDelete.id));
-      toast({
-        title: "Coupon deleted",
-        description: `Coupon ${couponToDelete.code} has been removed.`
+      toast(`Coupon ${couponToDelete.code} has been removed.`, {
+        description: "Coupon deleted successfully."
       });
     }
     setIsDeleteDialogOpen(false);
@@ -109,8 +107,7 @@ const AdminCouponsList = () => {
   const handleAddCoupon = () => {
     // Validate form
     if (!newCoupon.code || !newCoupon.discountValue || !newCoupon.expiryDate) {
-      toast({
-        title: "Validation error",
+      toast("Validation error", {
         description: "Please fill in all required fields."
       });
       return;
@@ -131,9 +128,8 @@ const AdminCouponsList = () => {
     ]);
     
     setIsAddDialogOpen(false);
-    toast({
-      title: "Coupon created",
-      description: `Coupon ${newCoupon.code} has been created.`
+    toast(`Coupon ${newCoupon.code} has been created.`, {
+      description: "New coupon created successfully."
     });
     
     // Reset form
