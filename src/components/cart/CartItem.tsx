@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Trash2, Plus, Minus } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -14,10 +13,10 @@ import {
 } from '../ui/alert-dialog';
 import { calculateBulkDiscount } from '@/data/productService';
 import { useCart } from '@/context/CartContext';
-import { toast } from 'sonner';
+import { toast } from '@/hooks/use-toast';
 
 const CartItem = ({ item }) => {
-  const { updateQuantity, removeItem } = useCart();
+  const { updateQuantity, removeFromCart } = useCart();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
 
@@ -30,9 +29,9 @@ const CartItem = ({ item }) => {
     updateQuantity(item.product.id, newQuantity);
     
     if (change > 0) {
-      toast.success(`Increased quantity of ${item.product.name}`);
+      toast(`Increased quantity of ${item.product.name}`);
     } else if (change < 0 && newQuantity > 0) {
-      toast.info(`Decreased quantity of ${item.product.name}`);
+      toast(`Decreased quantity of ${item.product.name}`);
     }
   };
 
@@ -42,15 +41,16 @@ const CartItem = ({ item }) => {
   };
 
   const confirmRemove = () => {
-    removeItem(item.product.id);
+    removeFromCart(item.product.id);
     setConfirmOpen(false);
     setIsRemoving(false);
-    toast.success(`${item.product.name} removed from cart`);
+    toast(`${item.product.name} removed from cart`);
   };
 
   return (
     <div className={`flex flex-col sm:flex-row items-start sm:items-center py-4 border-b 
       ${isRemoving ? 'animate-shake bg-red-50' : ''}`}>
+      
       <div className="flex items-center sm:w-1/2 mb-3 sm:mb-0">
         <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border">
           <img 

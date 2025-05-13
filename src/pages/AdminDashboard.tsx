@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
-import { Package, Users, Book, Coupon, Trash2, ShoppingCart, Grid, Calendar } from "lucide-react";
+import { Package, Users, Book, Ticket, Trash2, ShoppingCart, Grid, Calendar } from "lucide-react";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -46,7 +46,7 @@ const AdminDashboard = () => {
                 Book Clubs
               </TabsTrigger>
               <TabsTrigger value="coupons" className="flex items-center">
-                <Coupon className="mr-2 h-4 w-4" />
+                <Ticket className="mr-2 h-4 w-4" />
                 Coupons
               </TabsTrigger>
             </TabsList>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Ticket } from 'lucide-react';
@@ -13,7 +12,7 @@ import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 const CartPage: React.FC = () => {
-  const { items, clearCart, removeFromCart, updateQuantity, subtotal, grandTotal, applyCoupon } = useCart();
+  const { items, clearCart, subtotal, grandTotal, applyCoupon } = useCart();
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
   const { toast } = useToast();
@@ -65,8 +64,6 @@ const CartPage: React.FC = () => {
                   <CartItem
                     key={item.product.id}
                     item={item}
-                    removeFromCart={removeFromCart}
-                    updateQuantity={updateQuantity}
                   />
                 ))}
                 <Button variant="destructive" onClick={() => clearCart()} className="mt-4">

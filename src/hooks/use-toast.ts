@@ -1,6 +1,26 @@
 
-import { useToast as useToastFromRadix, toast } from "@/components/ui/toast";
+import { toast as sonnerToast } from "sonner";
+import type { ToastProps } from "@/components/ui/toast";
 
-export { useToast, toast };
+type ToastOptions = {
+  title?: string;
+  description?: string;
+  variant?: "default" | "destructive";
+  action?: React.ReactNode;
+};
 
-export const useToast = useToastFromRadix;
+export const useToast = () => {
+  return {
+    toast: (options: ToastOptions) => {
+      return sonnerToast(options.title, {
+        description: options.description,
+        action: options.action,
+      });
+    },
+    // This array helps maintain compatibility with the existing API
+    toasts: [] as ToastProps[],
+  };
+};
+
+export { sonnerToast as toast };
+

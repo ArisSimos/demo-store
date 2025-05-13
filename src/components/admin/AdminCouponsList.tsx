@@ -1,274 +1,333 @@
 
 import React, { useState } from 'react';
-import { Coupon, Trash2, Edit, Calendar, Percent } from 'lucide-react';
-import { 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle, 
-  CardDescription 
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Search, Trash2, Plus, Ticket } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useToast } from '@/hooks/use-toast';
-import { useForm } from 'react-hook-form';
-import { coupons as mockCoupons } from '@/data/products';
+import { Button } from '@/components/ui/button';
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
+} from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { toast } from '@/hooks/use-toast';
+
+// Sample coupon data structure (replace with your actual data)
+interface Coupon {
+  id: string;
+  code: string;
+  discountType: 'percentage' | 'fixed';
+  discountValue: number;
+  expiryDate: string;
+  isActive: boolean;
+}
+
+const SAMPLE_COUPONS: Coupon[] = [
+  { 
+    id: '1', 
+    code: 'SUMMER20', 
+    discountType: 'percentage', 
+    discountValue: 20, 
+    expiryDate: '2025-08-31',
+    isActive: true
+  },
+  { 
+    id: '2', 
+    code: 'WELCOME10', 
+    discountType: 'fixed', 
+    discountValue: 10, 
+    expiryDate: '2025-12-31',
+    isActive: true
+  },
+  { 
+    id: '3', 
+    code: 'FLASH25', 
+    discountType: 'percentage', 
+    discountValue: 25, 
+    expiryDate: '2025-06-01',
+    isActive: false
+  }
+];
 
 const AdminCouponsList = () => {
-  const [coupons, setCoupons] = useState([...mockCoupons]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [couponToDelete, setCouponToDelete] = useState<string | null>(null);
-  const [addCouponOpen, setAddCouponOpen] = useState(false);
-  const { toast } = useToast();
-
-  const form = useForm({
-    defaultValues: {
-      code: '',
-      discountValue: 0,
-      discountType: 'percentage',
-      validUntil: '',
-      minOrderValue: 0,
-    }
+  const [coupons, setCoupons] = useState<Coupon[]>(SAMPLE_COUPONS);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [newCoupon, setNewCoupon] = useState<Partial<Coupon>>({
+    code: '',
+    discountType: 'percentage',
+    discountValue: 10,
+    expiryDate: '',
+    isActive: true
   });
 
+  // Filter coupons based on search query
   const filteredCoupons = coupons.filter(coupon => 
-    coupon.code.toLowerCase().includes(searchTerm.toLowerCase())
+    coupon.code.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleDeleteCoupon = (couponCode: string) => {
-    setCouponToDelete(couponCode);
-    setDeleteConfirmOpen(true);
+  const handleDeleteCoupon = (coupon: Coupon) => {
+    setCouponToDelete(coupon);
+    setIsDeleteDialogOpen(true);
   };
 
   const confirmDelete = () => {
     if (couponToDelete) {
-      setCoupons(coupons.filter(coupon => coupon.code !== couponToDelete));
+      // In a real application, you would call an API to delete the coupon
+      setCoupons(coupons.filter(c => c.id !== couponToDelete.id));
       toast({
         title: "Coupon deleted",
-        description: "The coupon has been successfully removed.",
+        description: `Coupon ${couponToDelete.code} has been removed.`
       });
-      setDeleteConfirmOpen(false);
-      setCouponToDelete(null);
     }
+    setIsDeleteDialogOpen(false);
+    setCouponToDelete(null);
   };
 
-  const onSubmit = (data: any) => {
-    const newCoupon = {
-      code: data.code.toUpperCase(),
-      discountType: data.discountType as 'percentage' | 'fixed',
-      discountValue: Number(data.discountValue),
-      validUntil: data.validUntil ? new Date(data.validUntil).toISOString() : undefined,
-      minOrderValue: data.minOrderValue ? Number(data.minOrderValue) : undefined
-    };
+  const handleAddCoupon = () => {
+    // Validate form
+    if (!newCoupon.code || !newCoupon.discountValue || !newCoupon.expiryDate) {
+      toast({
+        title: "Validation error",
+        description: "Please fill in all required fields."
+      });
+      return;
+    }
 
-    setCoupons([...coupons, newCoupon]);
+    // In a real application, you would call an API to add the coupon
+    const id = `temp-${Date.now()}`;
+    setCoupons([
+      ...coupons, 
+      { 
+        id, 
+        code: newCoupon.code,
+        discountType: newCoupon.discountType || 'percentage',
+        discountValue: newCoupon.discountValue || 0,
+        expiryDate: newCoupon.expiryDate || '',
+        isActive: newCoupon.isActive || false
+      }
+    ]);
+    
+    setIsAddDialogOpen(false);
     toast({
       title: "Coupon created",
-      description: `${newCoupon.code} has been added to the system.`,
+      description: `Coupon ${newCoupon.code} has been created.`
     });
-    setAddCouponOpen(false);
-    form.reset();
+    
+    // Reset form
+    setNewCoupon({
+      code: '',
+      discountType: 'percentage',
+      discountValue: 10,
+      expiryDate: '',
+      isActive: true
+    });
   };
 
   return (
-    <div>
-      <Card className="mb-8">
-        <CardHeader className="pb-3">
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle>Manage Coupons</CardTitle>
-              <CardDescription>
-                Create, edit, and remove discount coupons.
-              </CardDescription>
-            </div>
-            <Button onClick={() => setAddCouponOpen(true)}>
-              Add New Coupon
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex mb-4">
-            <Input
-              placeholder="Search coupons..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="max-w-sm"
-            />
-          </div>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+          <Input
+            placeholder="Search coupons..."
+            className="pl-8"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <Button onClick={() => setIsAddDialogOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Coupon
+        </Button>
+      </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredCoupons.length > 0 ? (
-              filteredCoupons.map((coupon) => (
-                <div key={coupon.code} className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-medium text-lg flex items-center">
-                      <Coupon className="h-4 w-4 mr-2" />
-                      {coupon.code}
-                    </h3>
-                    <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs">
-                      {coupon.discountType === 'percentage' ? `${coupon.discountValue}%` : `$${coupon.discountValue.toFixed(2)}`}
-                    </span>
-                  </div>
-                  
-                  <div className="space-y-1 text-sm mb-3">
-                    <p className="flex items-center text-muted-foreground">
-                      <Percent className="h-4 w-4 mr-1" />
-                      {coupon.discountType === 'percentage' ? 'Percentage discount' : 'Fixed amount discount'}
-                    </p>
-                    
-                    {coupon.validUntil && (
-                      <p className="flex items-center text-muted-foreground">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        Valid until: {new Date(coupon.validUntil).toLocaleDateString()}
-                      </p>
-                    )}
-                    
-                    {coupon.minOrderValue && (
-                      <p className="text-muted-foreground">
-                        Min. order: ${coupon.minOrderValue.toFixed(2)}
-                      </p>
-                    )}
-                  </div>
-                  
-                  <div className="flex space-x-2 justify-end mt-2">
-                    <Button variant="outline" size="sm">
-                      <Edit className="h-4 w-4 mr-1" /> Edit
-                    </Button>
-                    <Button 
-                      variant="destructive" 
-                      size="sm"
-                      onClick={() => handleDeleteCoupon(coupon.code)}
-                    >
-                      <Trash2 className="h-4 w-4 mr-1" /> Delete
-                    </Button>
-                  </div>
-                </div>
-              ))
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Code</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Value</TableHead>
+              <TableHead>Expiry Date</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredCoupons.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8">
+                  No coupons found
+                </TableCell>
+              </TableRow>
             ) : (
-              <p className="col-span-full py-4 text-center text-muted-foreground">No coupons found matching your search criteria.</p>
+              filteredCoupons.map((coupon) => (
+                <TableRow key={coupon.id}>
+                  <TableCell className="font-medium">{coupon.code}</TableCell>
+                  <TableCell>
+                    {coupon.discountType === 'percentage' ? 'Percentage' : 'Fixed Amount'}
+                  </TableCell>
+                  <TableCell>
+                    {coupon.discountType === 'percentage' ? `${coupon.discountValue}%` : `$${coupon.discountValue}`}
+                  </TableCell>
+                  <TableCell>{new Date(coupon.expiryDate).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    <Badge 
+                      variant={coupon.isActive ? "default" : "outline"}
+                      className={coupon.isActive ? "bg-green-500" : ""}
+                    >
+                      {coupon.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleDeleteCoupon(coupon)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
             )}
-          </div>
-        </CardContent>
-      </Card>
+          </TableBody>
+        </Table>
+      </div>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Deletion</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this coupon? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex space-x-2 justify-end">
-            <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={confirmDelete}>
-              Delete Coupon
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Coupon</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the coupon "{couponToDelete?.code}"? 
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Add Coupon Dialog */}
-      <Dialog open={addCouponOpen} onOpenChange={setAddCouponOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create New Coupon</DialogTitle>
+            <DialogTitle>Add New Coupon</DialogTitle>
             <DialogDescription>
-              Add a new coupon code for customer discounts.
+              Create a new discount coupon for your customers.
             </DialogDescription>
           </DialogHeader>
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="code"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Coupon Code</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="SUMMER20" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="code" className="text-right">Code</label>
+              <Input 
+                id="code" 
+                className="col-span-3" 
+                value={newCoupon.code}
+                onChange={(e) => setNewCoupon({...newCoupon, code: e.target.value.toUpperCase()})}
+                placeholder="e.g., SUMMER25"
               />
-
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="discountValue"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Discount Value</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="number" min={0} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="discountType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Discount Type</FormLabel>
-                      <FormControl>
-                        <select
-                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          {...field}
-                        >
-                          <option value="percentage">Percentage (%)</option>
-                          <option value="fixed">Fixed Amount ($)</option>
-                        </select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label className="text-right">Type</label>
+              <div className="col-span-3 flex space-x-4">
+                <label className="flex items-center space-x-2">
+                  <input 
+                    type="radio" 
+                    checked={newCoupon.discountType === 'percentage'}
+                    onChange={() => setNewCoupon({...newCoupon, discountType: 'percentage'})}
+                  />
+                  <span>Percentage</span>
+                </label>
+                
+                <label className="flex items-center space-x-2">
+                  <input 
+                    type="radio" 
+                    checked={newCoupon.discountType === 'fixed'}
+                    onChange={() => setNewCoupon({...newCoupon, discountType: 'fixed'})}
+                  />
+                  <span>Fixed Amount</span>
+                </label>
               </div>
-
-              <FormField
-                control={form.control}
-                name="validUntil"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Valid Until (Optional)</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="date" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="value" className="text-right">Value</label>
+              <div className="col-span-3 flex items-center">
+                {newCoupon.discountType === 'fixed' && <span className="mr-2">$</span>}
+                <Input 
+                  id="value" 
+                  type="number" 
+                  value={newCoupon.discountValue?.toString() || ''}
+                  onChange={(e) => setNewCoupon({...newCoupon, discountValue: parseFloat(e.target.value)})}
+                />
+                {newCoupon.discountType === 'percentage' && <span className="ml-2">%</span>}
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="expiry" className="text-right">Expiry Date</label>
+              <Input 
+                id="expiry" 
+                type="date" 
+                className="col-span-3"
+                value={newCoupon.expiryDate}
+                onChange={(e) => setNewCoupon({...newCoupon, expiryDate: e.target.value})}
               />
-
-              <FormField
-                control={form.control}
-                name="minOrderValue"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Minimum Order Value (Optional)</FormLabel>
-                    <FormControl>
-                      <Input {...field} type="number" min={0} placeholder="0" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <DialogFooter>
-                <Button type="submit">Create Coupon</Button>
-              </DialogFooter>
-            </form>
-          </Form>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label className="text-right">Status</label>
+              <div className="col-span-3 flex items-center space-x-2">
+                <input 
+                  type="checkbox" 
+                  id="isActive"
+                  checked={newCoupon.isActive}
+                  onChange={(e) => setNewCoupon({...newCoupon, isActive: e.target.checked})}
+                />
+                <label htmlFor="isActive">Active</label>
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleAddCoupon}>Create Coupon</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

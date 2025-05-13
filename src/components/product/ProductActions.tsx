@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { Minus, Plus, Heart, ShoppingCart, Share2, Percent } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 interface ProductActionsProps {
   product: Product;
@@ -15,7 +14,6 @@ const ProductActions: React.FC<ProductActionsProps> = ({ product }) => {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const { toast } = useToast();
   
   const incrementQuantity = () => {
     setQuantity(prev => prev + 1);
@@ -48,8 +46,7 @@ const ProductActions: React.FC<ProductActionsProps> = ({ product }) => {
       }).catch(err => {
         toast({
           title: "Sharing failed",
-          description: "Could not share this product.",
-          variant: "destructive"
+          description: "Could not share this product."
         });
       });
     } else {
@@ -57,7 +54,7 @@ const ProductActions: React.FC<ProductActionsProps> = ({ product }) => {
       navigator.clipboard.writeText(window.location.href);
       toast({
         title: "Link copied!",
-        description: "Product link copied to clipboard.",
+        description: "Product link copied to clipboard."
       });
     }
   };
