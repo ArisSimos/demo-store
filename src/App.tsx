@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { WishlistProvider } from "@/context/WishlistContext";
+
+// Pages
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ProductDetail from "./pages/ProductDetail";
@@ -27,7 +29,16 @@ import SearchPage from "./pages/SearchPage";
 import VirtualBookshelfPage from "./pages/VirtualBookshelfPage";
 import BookClubsPage from "./pages/BookClubsPage";
 
-const queryClient = new QueryClient();
+// Initialize QueryClient with better error handling
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -36,7 +47,7 @@ const App = () => (
         <CartProvider>
           <TooltipProvider>
             <Toaster />
-            <Sonner />
+            <Sonner position="top-right" closeButton expand theme="light" />
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
@@ -55,7 +66,6 @@ const App = () => (
                 <Route path="/reading-lists" element={<ReadingListsPage />} />
                 <Route path="/reading-list/:id" element={<ReadingListDetailPage />} />
                 <Route path="/search" element={<SearchPage />} />
-                {/* New Routes */}
                 <Route path="/bookshelf" element={<VirtualBookshelfPage />} />
                 <Route path="/book-clubs" element={<BookClubsPage />} />
                 <Route path="*" element={<NotFound />} />

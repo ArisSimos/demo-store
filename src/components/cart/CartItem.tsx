@@ -28,7 +28,6 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart, updateQuantit
   };
   
   const handleRemove = () => {
-    // Show confirmation toast using the proper typing for Sonner
     toast(
       <div className="flex flex-col space-y-2">
         <p>Remove "{product.name}" from cart?</p>
@@ -57,22 +56,22 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart, updateQuantit
   };
   
   return (
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b py-4">
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b py-4 animate-fade-in">
       <div className="flex flex-1 items-center">
-        <Link to={`/product/${product.id}`} className="flex-shrink-0">
+        <Link to={`/product/${product.id}`} className="flex-shrink-0 hover-scale">
           <img 
             src={product.image} 
             alt={product.name} 
-            className="w-20 h-20 object-cover rounded"
+            className="w-20 h-20 object-cover rounded shadow-sm"
           />
         </Link>
         <div className="ml-4">
-          <Link to={`/product/${product.id}`} className="font-medium hover:underline">
+          <Link to={`/product/${product.id}`} className="font-medium hover:underline text-lg">
             {product.name}
           </Link>
           <p className="text-sm text-gray-600">${price.toFixed(2)} each</p>
           {product.bulkDiscount && (
-            <p className="text-xs text-green-600">
+            <p className="text-xs text-green-600 font-medium">
               Buy {product.bulkDiscount.threshold}+ and save {product.bulkDiscount.discountPercentage}%
             </p>
           )}
@@ -80,7 +79,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart, updateQuantit
       </div>
       
       <div className="flex items-center mt-4 md:mt-0">
-        <div className="flex items-center border rounded mr-4">
+        <div className="flex items-center border rounded-md mr-4 shadow-sm">
           <Button 
             variant="ghost" 
             size="icon" 
@@ -92,7 +91,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart, updateQuantit
           >
             <Minus className="h-4 w-4" />
           </Button>
-          <span className="mx-2 min-w-[20px] text-center">{quantity}</span>
+          <span className="mx-2 min-w-[20px] text-center font-medium">{quantity}</span>
           <Button 
             variant="ghost" 
             size="icon" 
@@ -106,12 +105,12 @@ const CartItem: React.FC<CartItemProps> = ({ item, removeFromCart, updateQuantit
         </div>
         
         <div className="flex flex-col items-end">
-          <span className="font-medium">${totalPrice.toFixed(2)}</span>
+          <span className="font-medium text-lg">${totalPrice.toFixed(2)}</span>
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={handleRemove} 
-            className="text-red-500 hover:text-red-700 h-8 w-8"
+            className="text-red-500 hover:text-red-700 h-8 w-8 hover:bg-red-50"
             title="Remove from cart"
             aria-label="Remove from cart"
           >
