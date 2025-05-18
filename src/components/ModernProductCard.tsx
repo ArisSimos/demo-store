@@ -145,10 +145,10 @@ const ModernProductCard: React.FC<ProductCardProps> = ({ product, index = 0 }) =
             </div>
             
             <div className="text-sm text-amber-600 dark:text-amber-400">
-              {product.rating && (
+              {product.rating !== undefined && (
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
-                    <span key={i} className={i < product.rating ? "text-amber-500" : "text-gray-300"}>★</span>
+                    <span key={i} className={i < (product.rating || 0) ? "text-amber-500" : "text-gray-300"}>★</span>
                   ))}
                 </div>
               )}

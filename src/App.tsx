@@ -85,12 +85,12 @@ const queryClient = new QueryClient({
   },
 });
 
-// App Component
+// App Content Component
 const AppContent = () => {
   const location = useLocation();
   
-  // Set dark/light mode based on user preference
   useEffect(() => {
+    // Set dark/light mode based on user preference
     if (localStorage.theme === 'dark' || 
         (!('theme' in localStorage) && 
          window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -131,22 +131,25 @@ const AppContent = () => {
   );
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <WishlistProvider>
-        <CartProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner position="top-right" closeButton expand theme="system" />
-            <BrowserRouter>
-              <AppContent />
-            </BrowserRouter>
-          </TooltipProvider>
-        </CartProvider>
-      </WishlistProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+// Main App Component 
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AuthProvider>
+          <WishlistProvider>
+            <CartProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner position="top-right" closeButton expand theme="system" />
+                <AppContent />
+              </TooltipProvider>
+            </CartProvider>
+          </WishlistProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
