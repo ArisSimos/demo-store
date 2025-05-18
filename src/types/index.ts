@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -18,6 +17,7 @@ export interface Product {
   duration?: string; // For audiobooks (e.g. "8 hours 12 minutes")
   narrator?: string; // For audiobooks
   bulkDiscount?: BulkDiscount; // New field for bulk discounts
+  rating?: number; // Added rating property
 }
 
 export interface BulkDiscount {
