@@ -89,25 +89,36 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border selection:bg-amber-200/30 selection:text-amber-900 dark:selection:bg-amber-700/30 dark:selection:text-amber-100;
   }
 
   body {
-    @apply bg-background text-foreground font-sans bg-subtle-paper;
+    @apply bg-background text-foreground font-sans bg-subtle-paper dark:bg-amber-950 transition-colors duration-300;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
   }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
 @layer components {
+  .glass-card {
+    @apply bg-white/70 dark:bg-amber-900/30 backdrop-blur-md border border-amber-100/80 dark:border-amber-800/50 shadow-lg;
+  }
+  
   .product-grid {
     @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
   }
   
   .product-card {
-    @apply bg-card rounded-lg shadow-md overflow-hidden transition-transform hover:shadow-lg hover:-translate-y-1 border border-amber-100;
+    @apply bg-card rounded-lg shadow-md overflow-hidden transition-transform hover:shadow-lg hover:-translate-y-1 border border-amber-100 dark:border-amber-800/50;
   }
   
   .product-image {
@@ -115,11 +126,11 @@
   }
   
   .category-badge {
-    @apply inline-block px-2 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-800 border border-amber-200;
+    @apply inline-block px-2 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-800 dark:bg-amber-800/50 dark:text-amber-300 border border-amber-200 dark:border-amber-700/50;
   }
   
   .price {
-    @apply font-semibold text-lg text-amber-900;
+    @apply font-semibold text-lg text-amber-900 dark:text-amber-200;
   }
   
   .price-sale {
@@ -127,7 +138,7 @@
   }
   
   .btn-cart {
-    @apply w-full flex items-center justify-center gap-2 bg-amber-800 hover:bg-amber-900;
+    @apply w-full flex items-center justify-center gap-2 bg-amber-800 hover:bg-amber-900 dark:bg-amber-700 dark:hover:bg-amber-800;
   }
   
   .library-section {
@@ -135,6 +146,267 @@
   }
   
   .library-heading {
-    @apply font-serif text-3xl font-bold mb-6 text-amber-900 relative inline-block after:content-[''] after:absolute after:w-full after:h-0.5 after:bg-amber-300 after:bottom-0 after:left-0;
+    @apply font-serif text-3xl font-bold mb-6 text-amber-900 dark:text-amber-100 relative inline-block after:content-[''] after:absolute after:w-full after:h-0.5 after:bg-amber-300 dark:after:bg-amber-700 after:bottom-0 after:left-0;
   }
+
+  /* Modern button hover effects */
+  .btn-modern {
+    @apply relative overflow-hidden transition-all duration-300;
+  }
+  
+  .btn-modern::after {
+    @apply content-[''] absolute inset-0 scale-x-0 origin-left transition-transform duration-300 ease-out bg-gradient-to-r from-amber-500/20 to-amber-600/20 dark:from-amber-700/20 dark:to-amber-800/20;
+  }
+  
+  .btn-modern:hover::after {
+    @apply scale-x-100;
+  }
+
+  /* Glassmorphism */
+  .glass-morphism {
+    @apply bg-white/30 dark:bg-black/20 backdrop-blur-lg border border-white/20 dark:border-white/10;
+  }
+
+  .glass-card {
+    @apply bg-white/80 dark:bg-black/30 backdrop-blur-md border border-white/30 dark:border-white/10 shadow-lg hover:shadow-xl transition-all;
+  }
+
+  /* Animated underline for text links */
+  .link-underline {
+    @apply relative;
+  }
+
+  .link-underline::after {
+    @apply content-[''] absolute left-0 bottom-0 w-full h-0.5 bg-amber-400 dark:bg-amber-600 scale-x-0 origin-left transition-transform duration-300;
+  }
+
+  .link-underline:hover::after {
+    @apply scale-x-100;
+  }
+}
+
+@layer utilities {
+  /* Animations defined in main.tsx */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  /* Image loading blur-up effect */
+  .img-loading {
+    filter: blur(10px);
+    transition: filter 0.3s ease-out;
+  }
+
+  .img-loaded {
+    filter: blur(0);
+  }
+}
+
+/* Essential base styles */
+body {
+  min-height: 100vh;
+  background-color: #faf8f3;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23f0e6d2' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+/* Dark mode pattern */
+.dark body {
+  background-color: #1c1711;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23382a1e' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.book-spine {
+  position: relative;
+  background: linear-gradient(to right, #8B4513, #A0522D);
+  box-shadow: 2px 0 4px rgba(0,0,0,0.3);
+  width: 30px;
+}
+
+.book-spine::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 0;
+  right: 0;
+  bottom: 10%;
+  background: linear-gradient(to bottom, 
+    transparent 0%, 
+    rgba(255,255,255,0.1) 10%,
+    transparent 20%,
+    transparent 80%,
+    rgba(255,255,255,0.1) 90%,
+    transparent 100%
+  );
+}
+
+.reading-lamp {
+  box-shadow: 0 0 30px 15px rgba(255, 220, 150, 0.4);
+}
+
+@keyframes page-turn {
+  0% {
+    transform: rotateY(0);
+  }
+  100% {
+    transform: rotateY(-15deg);
+  }
+}
+
+.hover-book:hover .book-cover {
+  animation: page-turn 0.5s ease-out forwards;
+}
+
+.bookshelf {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 20px,
+    rgba(112, 66, 20, 0.1) 20px,
+    rgba(112, 66, 20, 0.1) 22px
+  );
+}
+
+.library-heading {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.25rem;
+}
+
+.library-heading::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, rgba(112, 66, 20, 0.8), transparent);
+}
+
+.dark .library-heading::after {
+  background: linear-gradient(to right, rgba(255, 186, 97, 0.5), transparent);
+}
+
+.book-detail-card {
+  background-color: #fffcf7;
+  border-left: 4px solid #8B4513;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.dark .book-detail-card {
+  background-color: #2a2017;
+  border-left: 4px solid #B36A20;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Added animations */
+@keyframes scale-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  80% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out forwards;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Focus styles for improved accessibility */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Skip to content link (accessibility feature) */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  z-index: 100;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 8px 16px;
+  transition: top 0.3s;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* Image loading blur-up effect */
+.img-loading {
+  filter: blur(10px);
+  transition: filter 0.3s ease-out;
+}
+
+.img-loaded {
+  filter: blur(0);
+}
+
+/* Improved button focus/active states */
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* Modern scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Fade in animation for page elements */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
 }

@@ -8,6 +8,7 @@ import { useCart } from '@/context/CartContext';
 import { categories } from '@/data/products';
 import UserMenu from '@/components/UserMenu';
 import HeaderNavItems from '@/components/HeaderNavItems';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const Header: React.FC = () => {
   const { totalItems } = useCart();
@@ -48,7 +49,7 @@ const Header: React.FC = () => {
   };
   
   return (
-    <header className={`sticky top-0 z-30 w-full bg-background border-b ${scrolled ? 'shadow-md' : 'shadow-sm'} transition-shadow`}>
+    <header className={`sticky top-0 z-30 w-full bg-background/80 backdrop-blur-md border-b ${scrolled ? 'shadow-md' : 'shadow-sm'} transition-all duration-300`}>
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -66,12 +67,12 @@ const Header: React.FC = () => {
               <button className="text-sm font-medium hover:text-primary flex items-center whitespace-nowrap transition-colors">
                 Categories
               </button>
-              <div className="absolute left-0 top-full mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+              <div className="absolute left-0 top-full mt-2 w-48 rounded-md shadow-lg py-1 bg-background/90 backdrop-blur-sm border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                 {categories.map((category) => (
                   <Link
                     key={category.id}
                     to={`/category/${category.slug}`}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                    className="block px-4 py-2 text-sm text-foreground hover:bg-accent transition-colors"
                   >
                     {category.name}
                   </Link>
@@ -110,6 +111,8 @@ const Header: React.FC = () => {
                 <Search className="h-4 w-4 text-muted-foreground" />
               </button>
             </form>
+            
+            <ThemeToggle />
             
             <Link to="/cart" className="relative p-1.5 hover:bg-muted/50 rounded-full transition-colors" aria-label="View cart">
               <ShoppingCart className="h-5 w-5" />
