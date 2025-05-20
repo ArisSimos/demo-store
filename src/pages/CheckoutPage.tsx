@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, CreditCard, Check, Mail } from 'lucide-react';
@@ -39,12 +38,11 @@ const CheckoutPage: React.FC = () => {
       setIsComplete(true);
       clearCart();
       
-      // Show email notification toast
+      // Show email notification toast - removed duration property
       if (sendReceipt && email) {
         toast({
           title: "Receipt Sent",
-          description: `A receipt has been sent to ${email}`,
-          duration: 5000,
+          description: `A receipt has been sent to ${email}`
         });
       }
       
