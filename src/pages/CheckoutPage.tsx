@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, CreditCard, Check, Mail } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
@@ -10,6 +12,11 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 
+// Initialize Supabase client
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
 const CheckoutPage: React.FC = () => {
   const { items, subtotal, grandTotal, clearCart } = useCart();
   const { toast } = useToast();
@@ -17,8 +24,53 @@ const CheckoutPage: React.FC = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [email, setEmail] = useState('');
   const [sendReceipt, setSendReceipt] = useState(true);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const sendReceiptEmail = async (recipientEmail: string, orderDetails: any) => {
+    setIsSendingEmail(true);
+    try {
+      // Call the Supabase Edge Function to send the email
+      const { data, error } = await supabase.functions.invoke('send-receipt-email', {
+        body: {
+          email: recipientEmail,
+          orderDetails: {
+            items: items.map(item => ({
+              name: item.product.name,
+              price: item.product.salePrice || item.product.price,
+              quantity: item.quantity
+            })),
+            subtotal,
+            grandTotal
+          }
+        }
+      });
+      
+      if (error) {
+        console.error('Error sending email:', error);
+        toast({
+          title: "Failed to send email",
+          description: "There was an error sending your receipt. Please contact support.",
+          variant: "destructive",
+        });
+        return false;
+      }
+      
+      console.log('Email sent successfully:', data);
+      return true;
+    } catch (err) {
+      console.error('Exception sending email:', err);
+      toast({
+        title: "Failed to send email",
+        description: "There was an error sending your receipt. Please contact support.",
+        variant: "destructive",
+      });
+      return false;
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
+  
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (sendReceipt && !email) {
@@ -33,18 +85,22 @@ const CheckoutPage: React.FC = () => {
     setIsProcessing(true);
     
     // Simulate payment processing
-    setTimeout(() => {
+    setTimeout(async () => {
       setIsProcessing(false);
       setIsComplete(true);
-      clearCart();
       
-      // Show email notification toast - removed duration property
+      // Send real email if user requested it
       if (sendReceipt && email) {
-        toast({
-          title: "Receipt Sent",
-          description: `A receipt has been sent to ${email}`
-        });
+        const emailSent = await sendReceiptEmail(email, items);
+        if (emailSent) {
+          toast({
+            title: "Receipt Sent",
+            description: `A receipt has been sent to ${email}`
+          });
+        }
       }
+      
+      clearCart();
       
       toast({
         title: "Order placed successfully",
