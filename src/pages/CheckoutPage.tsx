@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, CreditCard, Check } from 'lucide-react';
+import { ArrowLeft, CreditCard, Check, Mail } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
@@ -9,15 +9,28 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const CheckoutPage: React.FC = () => {
   const { items, subtotal, grandTotal, clearCart } = useCart();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [email, setEmail] = useState('');
+  const [sendReceipt, setSendReceipt] = useState(true);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (sendReceipt && !email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email to receive a receipt",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsProcessing(true);
     
     // Simulate payment processing
@@ -25,6 +38,16 @@ const CheckoutPage: React.FC = () => {
       setIsProcessing(false);
       setIsComplete(true);
       clearCart();
+      
+      // Show email notification toast
+      if (sendReceipt && email) {
+        toast({
+          title: "Receipt Sent",
+          description: `A receipt has been sent to ${email}`,
+          duration: 5000,
+        });
+      }
+      
       toast({
         title: "Order placed successfully",
         description: "Thank you for your purchase!",
@@ -38,13 +61,19 @@ const CheckoutPage: React.FC = () => {
         <Header />
         <main className="flex-grow">
           <div className="container mx-auto px-4 py-16 max-w-2xl text-center">
-            <div className="bg-white rounded-lg shadow-lg p-8">
-              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                <Check className="w-8 h-8 text-green-600" />
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+              <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mb-4">
+                <Check className="w-8 h-8 text-green-600 dark:text-green-400" />
               </div>
               <h1 className="text-2xl font-bold mb-4">Order Confirmed!</h1>
-              <p className="text-gray-600 mb-8">
+              <p className="text-gray-600 dark:text-gray-300 mb-8">
                 Thank you for your purchase. Your order has been received and is being processed.
+                {sendReceipt && email && (
+                  <span className="block mt-2">
+                    <Mail className="inline-block w-4 h-4 mr-1" />
+                    A receipt has been sent to {email}
+                  </span>
+                )}
               </p>
               <Button asChild>
                 <Link to="/">Continue Shopping</Link>
@@ -74,7 +103,7 @@ const CheckoutPage: React.FC = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
                 <h2 className="text-lg font-semibold mb-4">Shipping Information</h2>
                 <form onSubmit={handleSubmit}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -104,6 +133,32 @@ const CheckoutPage: React.FC = () => {
                       <label className="block text-sm font-medium mb-1">ZIP Code</label>
                       <Input required />
                     </div>
+                  </div>
+                  
+                  {/* Email for Receipt */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-1">Email</label>
+                    <Input 
+                      type="email" 
+                      placeholder="your@email.com" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required={sendReceipt}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center space-x-2 mb-6">
+                    <Checkbox 
+                      id="sendReceipt" 
+                      checked={sendReceipt} 
+                      onCheckedChange={(checked) => setSendReceipt(checked === true)}
+                    />
+                    <label 
+                      htmlFor="sendReceipt" 
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Send me a receipt by email
+                    </label>
                   </div>
                   
                   <h2 className="text-lg font-semibold mb-4 mt-8">Payment Information</h2>
@@ -146,7 +201,7 @@ const CheckoutPage: React.FC = () => {
             </div>
 
             <div>
-              <div className="bg-white rounded-lg shadow-md p-6 sticky top-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 sticky top-6">
                 <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
                 <div className="space-y-3 mb-4">
                   {items.map((item) => (
@@ -166,7 +221,7 @@ const CheckoutPage: React.FC = () => {
                     <span>${subtotal.toFixed(2)}</span>
                   </div>
                   {subtotal !== grandTotal && (
-                    <div className="flex justify-between text-green-600">
+                    <div className="flex justify-between text-green-600 dark:text-green-400">
                       <span>Discount</span>
                       <span>-${(subtotal - grandTotal).toFixed(2)}</span>
                     </div>
