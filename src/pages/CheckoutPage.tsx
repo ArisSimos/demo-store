@@ -14,7 +14,7 @@ import CheckoutComplete from '@/components/checkout/CheckoutComplete';
 import { CartItem } from '@/types';
 
 const CheckoutPage: React.FC = () => {
-  const { items, subtotal, grandTotal, clearCart } = useCart();
+  const { items, subtotal, grandTotal, clearCart, bulkDiscountTotal, membershipDiscountTotal, couponDiscount } = useCart();
   const { toast } = useToast();
   const { sendReceiptEmail } = useEmailReceipt();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -108,6 +108,9 @@ const CheckoutPage: React.FC = () => {
                 items={items}
                 subtotal={subtotal}
                 grandTotal={grandTotal}
+                bulkDiscountTotal={bulkDiscountTotal}
+                membershipDiscountTotal={membershipDiscountTotal}
+                couponDiscount={couponDiscount}
               />
             </div>
           </div>

@@ -3,6 +3,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { CartItem, Product, Coupon } from '@/types';
 import { toast } from 'sonner';
 import { calculateBulkDiscount } from '@/data/products';
+import { useSubscription } from './SubscriptionContext';
+import { calculatePriceWithSubscription } from '@/data/subscriptionService';
 
 interface CartContextType {
   items: CartItem[];
@@ -21,6 +23,7 @@ interface CartContextType {
   applyCoupon: (coupon: Coupon | null) => void;
   couponDiscount: number;
   bulkDiscountTotal: number;
+  membershipDiscountTotal: number;
   grandTotal: number;
   isInCart: (productId: string) => boolean;
 }
@@ -38,6 +41,7 @@ export const useCart = () => {
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const { isSubscribed, currentTier, remainingRentals, setRemainingRentals } = useSubscription();
   
   // Load cart from localStorage on initial render
   useEffect(() => {
@@ -85,6 +89,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const isRental = !!rentalInfo?.isRental;
       const rentalOptionId = rentalInfo?.rentalOptionId;
       
+      // Check if this is a free rental from membership
+      let useFreeRental = false;
+      if (isRental && isSubscribed && remainingRentals > 0) {
+        useFreeRental = true;
+        setRemainingRentals(remainingRentals - 1);
+      }
+      
       // Find existing item - for rentals, we check both product ID and rental option ID
       const existingItemIndex = prevItems.findIndex(item => 
         item.product.id === product.id && 
@@ -106,6 +117,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return updatedItems;
       } else {
         // New item
+        const rentalPrice = useFreeRental ? 0 : rentalInfo?.rentalPrice;
+        
         const newItem: CartItem = {
           product,
           quantity,
@@ -113,13 +126,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isRental: true,
             rentalOptionId: rentalInfo.rentalOptionId,
             rentalDuration: rentalInfo.rentalDuration,
-            rentalPrice: rentalInfo.rentalPrice
+            rentalPrice
           } : {})
         };
         
-        toast('Added to cart', {
-          description: `${product.name} ${isRental ? '(rental)' : ''} added to your cart.`
-        });
+        if (useFreeRental) {
+          toast('Added to cart', {
+            description: `${product.name} (free rental) added to your cart.`
+          });
+        } else {
+          toast('Added to cart', {
+            description: `${product.name} ${isRental ? '(rental)' : ''} added to your cart.`
+          });
+        }
         
         return [...prevItems, newItem];
       }
@@ -172,8 +191,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   const totalItems = items.reduce((total, item) => total + item.quantity, 0);
   
+  // Calculate regular subtotal
   const subtotal = items.reduce((total, item) => {
-    if (item.isRental && item.rentalPrice) {
+    if (item.isRental && item.rentalPrice !== undefined) {
       return total + (item.rentalPrice * item.quantity);
     } else {
       return total + ((item.product.salePrice || item.product.price) * item.quantity);
@@ -188,6 +208,17 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return total;
   }, 0);
   
+  // Calculate membership discount (only for purchase items, not rentals)
+  const membershipDiscountTotal = isSubscribed && currentTier ? items.reduce((total, item) => {
+    if (!item.isRental) {
+      const regularPrice = item.product.salePrice || item.product.price;
+      const discountedPrice = calculatePriceWithSubscription(regularPrice, currentTier);
+      const discount = (regularPrice - discountedPrice) * item.quantity;
+      return total + discount;
+    }
+    return total;
+  }, 0) : 0;
+  
   // Calculate coupon discount
   const couponDiscount = appliedCoupon
     ? appliedCoupon.discountType === 'percentage'
@@ -201,7 +232,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     : couponDiscount;
   
   // Calculate grand total
-  const grandTotal = Math.max(0, subtotal - bulkDiscountTotal - finalCouponDiscount);
+  const grandTotal = Math.max(0, subtotal - bulkDiscountTotal - membershipDiscountTotal - finalCouponDiscount);
   
   const value = {
     items,
@@ -215,6 +246,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     applyCoupon,
     couponDiscount: finalCouponDiscount,
     bulkDiscountTotal,
+    membershipDiscountTotal,
     grandTotal,
     isInCart
   };

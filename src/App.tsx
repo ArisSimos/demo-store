@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { WishlistProvider } from "@/context/WishlistContext";
+import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import MobileNavigation from "@/components/MobileNavigation";
@@ -31,6 +31,7 @@ import ReadingListDetailPage from "./pages/ReadingListDetailPage";
 import SearchPage from "./pages/SearchPage";
 import VirtualBookshelfPage from "./pages/VirtualBookshelfPage";
 import BookClubsPage from "./pages/BookClubsPage";
+import SubscriptionPage from "./pages/SubscriptionPage";
 
 // Scroll Progress Indicator
 const ScrollProgress = () => {
@@ -123,6 +124,7 @@ const AppContent = () => {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/bookshelf" element={<VirtualBookshelfPage />} />
           <Route path="/book-clubs" element={<BookClubsPage />} />
+          <Route path="/subscription" element={<SubscriptionPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </PageTransition>
@@ -137,15 +139,17 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <WishlistProvider>
-            <CartProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner position="top-right" closeButton expand theme="system" />
-                <AppContent />
-              </TooltipProvider>
-            </CartProvider>
-          </WishlistProvider>
+          <SubscriptionProvider>
+            <WishlistProvider>
+              <CartProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner position="top-right" closeButton expand theme="system" />
+                  <AppContent />
+                </TooltipProvider>
+              </CartProvider>
+            </WishlistProvider>
+          </SubscriptionProvider>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>

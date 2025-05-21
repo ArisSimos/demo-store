@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Ticket } from 'lucide-react';
+import { ArrowLeft, Ticket, Sparkles } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
@@ -10,9 +11,20 @@ import { Input } from '@/components/ui/input';
 import { validateCoupon } from '@/data/products';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useSubscription } from '@/context/SubscriptionContext';
 
 const CartPage: React.FC = () => {
-  const { items, clearCart, subtotal, grandTotal, applyCoupon } = useCart();
+  const { 
+    items, 
+    clearCart, 
+    subtotal, 
+    grandTotal, 
+    applyCoupon,
+    bulkDiscountTotal,
+    membershipDiscountTotal,
+    couponDiscount
+  } = useCart();
+  const { isSubscribed, currentTier } = useSubscription();
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
   const { toast } = useToast();
@@ -80,14 +92,37 @@ const CartPage: React.FC = () => {
                     <span className="text-gray-700">Subtotal:</span>
                     <span className="font-semibold">${subtotal.toFixed(2)}</span>
                   </div>
-                  {subtotal !== grandTotal && (
+                  
+                  {bulkDiscountTotal > 0 && (
                     <div className="flex justify-between mb-2">
-                      <span className="text-gray-700">Discount:</span>
+                      <span className="text-gray-700">Bulk Discount:</span>
                       <span className="font-semibold text-green-600">
-                        -${(subtotal - grandTotal).toFixed(2)}
+                        -${bulkDiscountTotal.toFixed(2)}
                       </span>
                     </div>
                   )}
+                  
+                  {membershipDiscountTotal > 0 && (
+                    <div className="flex justify-between mb-2">
+                      <span className="text-gray-700 flex items-center">
+                        <Sparkles className="h-3 w-3 mr-1 text-amber-500" />
+                        Member Discount:
+                      </span>
+                      <span className="font-semibold text-amber-600">
+                        -${membershipDiscountTotal.toFixed(2)}
+                      </span>
+                    </div>
+                  )}
+                  
+                  {couponDiscount > 0 && (
+                    <div className="flex justify-between mb-2">
+                      <span className="text-gray-700">Coupon Discount:</span>
+                      <span className="font-semibold text-green-600">
+                        -${couponDiscount.toFixed(2)}
+                      </span>
+                    </div>
+                  )}
+                  
                   <div className="flex justify-between mb-2">
                     <span className="text-gray-700">Shipping:</span>
                     <span className="font-semibold">Free</span>
@@ -97,6 +132,15 @@ const CartPage: React.FC = () => {
                     <span className="text-gray-700 font-semibold">Total:</span>
                     <span className="font-bold text-xl">${grandTotal.toFixed(2)}</span>
                   </div>
+                  
+                  {isSubscribed && (
+                    <div className="mt-2 pt-2 border-t border-dashed border-gray-200 text-xs text-center text-muted-foreground">
+                      <div className="flex items-center justify-center">
+                        <Sparkles className="h-3 w-3 mr-1 text-amber-500" />
+                        <span>{currentTier?.charAt(0).toUpperCase()}{currentTier?.slice(1)} Membership Benefits Applied</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Coupon */}
@@ -115,6 +159,23 @@ const CartPage: React.FC = () => {
                 <Button asChild className="w-full">
                   <Link to="/checkout">Proceed to Checkout</Link>
                 </Button>
+                
+                {!isSubscribed && (
+                  <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
+                    <div className="text-sm text-amber-800">
+                      <p className="font-medium flex items-center">
+                        <Sparkles className="h-3 w-3 mr-1" />
+                        Subscribe and save!
+                      </p>
+                      <p className="text-xs mt-1">
+                        Join our membership program to get up to 15% off on all purchases, free rentals and more.
+                      </p>
+                      <Button asChild variant="outline" size="sm" className="w-full mt-2 border-amber-300 bg-white hover:bg-amber-100">
+                        <Link to="/subscription">View Plans</Link>
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
