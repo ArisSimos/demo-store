@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { Trash2, Plus, Minus } from 'lucide-react';
+import { Trash2, Plus, Minus, Clock } from 'lucide-react';
 import { Button } from '../ui/button';
 import { 
   AlertDialog,
@@ -14,24 +15,41 @@ import {
 import { calculateBulkDiscount } from '@/data/productService';
 import { useCart } from '@/context/CartContext';
 import { toast } from '@/hooks/use-toast';
+import { CartItem as CartItemType } from '@/types';
 
-const CartItem = ({ item }) => {
+interface CartItemProps {
+  item: CartItemType;
+}
+
+const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const { updateQuantity, removeFromCart } = useCart();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
 
-  // Calculate any applicable bulk discount
-  const bulkDiscount = item.product.bulkDiscount ? calculateBulkDiscount(item.product, item.quantity) : 0;
-  const itemTotal = ((item.product.salePrice || item.product.price) * item.quantity) - bulkDiscount;
+  // Calculate any applicable bulk discount (only for purchases, not rentals)
+  const bulkDiscount = !item.isRental && item.product.bulkDiscount 
+    ? calculateBulkDiscount(item.product, item.quantity) 
+    : 0;
+  
+  // Calculate item total based on whether it's a rental or purchase
+  const itemPrice = item.isRental && item.rentalPrice 
+    ? item.rentalPrice 
+    : (item.product.salePrice || item.product.price);
+  
+  const itemTotal = (itemPrice * item.quantity) - bulkDiscount;
 
-  const handleQuantityChange = (change) => {
+  const handleQuantityChange = (change: number) => {
     const newQuantity = Math.max(1, item.quantity + change);
     updateQuantity(item.product.id, newQuantity);
     
     if (change > 0) {
-      toast(`Increased quantity of ${item.product.name}`);
+      toast({
+        description: `Increased quantity of ${item.product.name}`
+      });
     } else if (change < 0 && newQuantity > 0) {
-      toast(`Decreased quantity of ${item.product.name}`);
+      toast({
+        description: `Decreased quantity of ${item.product.name}`
+      });
     }
   };
 
@@ -44,7 +62,9 @@ const CartItem = ({ item }) => {
     removeFromCart(item.product.id);
     setConfirmOpen(false);
     setIsRemoving(false);
-    toast(`${item.product.name} removed from cart`);
+    toast({
+      description: `${item.product.name} removed from cart`
+    });
   };
 
   return (
@@ -61,12 +81,30 @@ const CartItem = ({ item }) => {
         </div>
         
         <div className="ml-4 flex flex-col">
-          <div className="text-base font-medium">{item.product.name}</div>
+          <div className="text-base font-medium">
+            {item.product.name}
+            {item.isRental && (
+              <span className="ml-2 text-xs bg-blue-100 text-blue-800 rounded-full px-2 py-0.5">
+                Rental
+              </span>
+            )}
+          </div>
+          
           <div className="mt-1 text-sm text-gray-500">
             {item.product.author && <span>By {item.product.author}</span>}
+            
+            {item.isRental && item.rentalDuration && (
+              <div className="flex items-center mt-1 text-xs">
+                <Clock className="h-3 w-3 mr-1" />
+                {item.rentalDuration} day rental
+              </div>
+            )}
           </div>
+          
           <div className="mt-1 text-sm">
-            {item.product.salePrice ? (
+            {item.isRental ? (
+              <span className="font-medium">${item.rentalPrice?.toFixed(2)}</span>
+            ) : item.product.salePrice ? (
               <div className="flex items-center">
                 <span className="font-medium text-primary">${item.product.salePrice.toFixed(2)}</span>
                 <span className="ml-2 text-gray-500 line-through">${item.product.price.toFixed(2)}</span>

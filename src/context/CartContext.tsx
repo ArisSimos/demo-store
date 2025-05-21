@@ -6,7 +6,12 @@ import { calculateBulkDiscount } from '@/data/products';
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (product: Product, quantity?: number) => void;
+  addToCart: (product: Product, quantity?: number, rentalInfo?: {
+    isRental: boolean;
+    rentalOptionId: string;
+    rentalDuration: number;
+    rentalPrice: number;
+  }) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -17,7 +22,7 @@ interface CartContextType {
   couponDiscount: number;
   bulkDiscountTotal: number;
   grandTotal: number;
-  isInCart: (productId: string) => boolean; // Add isInCart method to interface
+  isInCart: (productId: string) => boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -69,24 +74,54 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [appliedCoupon]);
   
-  const addToCart = (product: Product, quantity = 1) => {
+  const addToCart = (product: Product, quantity = 1, rentalInfo?: {
+    isRental: boolean;
+    rentalOptionId: string;
+    rentalDuration: number;
+    rentalPrice: number;
+  }) => {
     setItems(prevItems => {
-      const existingItem = prevItems.find(item => item.product.id === product.id);
+      // For rental items, we treat them as separate items even if the product is the same
+      const isRental = !!rentalInfo?.isRental;
+      const rentalOptionId = rentalInfo?.rentalOptionId;
       
-      if (existingItem) {
+      // Find existing item - for rentals, we check both product ID and rental option ID
+      const existingItemIndex = prevItems.findIndex(item => 
+        item.product.id === product.id && 
+        ((!isRental && !item.isRental) || (isRental && item.isRental && item.rentalOptionId === rentalOptionId))
+      );
+      
+      if (existingItemIndex !== -1) {
+        // Item exists, update quantity
+        const updatedItems = [...prevItems];
+        updatedItems[existingItemIndex] = {
+          ...updatedItems[existingItemIndex],
+          quantity: updatedItems[existingItemIndex].quantity + quantity
+        };
+        
         toast('Cart updated', {
           description: `${product.name} quantity updated in your cart.`
         });
-        return prevItems.map(item => 
-          item.product.id === product.id 
-            ? { ...item, quantity: item.quantity + quantity } 
-            : item
-        );
+        
+        return updatedItems;
       } else {
+        // New item
+        const newItem: CartItem = {
+          product,
+          quantity,
+          ...(isRental ? {
+            isRental: true,
+            rentalOptionId: rentalInfo.rentalOptionId,
+            rentalDuration: rentalInfo.rentalDuration,
+            rentalPrice: rentalInfo.rentalPrice
+          } : {})
+        };
+        
         toast('Added to cart', {
-          description: `${product.name} added to your cart.`
+          description: `${product.name} ${isRental ? '(rental)' : ''} added to your cart.`
         });
-        return [...prevItems, { product, quantity }];
+        
+        return [...prevItems, newItem];
       }
     });
   };
@@ -137,14 +172,20 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   const totalItems = items.reduce((total, item) => total + item.quantity, 0);
   
-  const subtotal = items.reduce(
-    (total, item) => total + (item.product.salePrice || item.product.price) * item.quantity, 
-    0
-  );
+  const subtotal = items.reduce((total, item) => {
+    if (item.isRental && item.rentalPrice) {
+      return total + (item.rentalPrice * item.quantity);
+    } else {
+      return total + ((item.product.salePrice || item.product.price) * item.quantity);
+    }
+  }, 0);
 
-  // Calculate bulk discounts
+  // Calculate bulk discounts (only for purchase items, not rentals)
   const bulkDiscountTotal = items.reduce((total, item) => {
-    return total + calculateBulkDiscount(item.product, item.quantity);
+    if (!item.isRental) {
+      return total + calculateBulkDiscount(item.product, item.quantity);
+    }
+    return total;
   }, 0);
   
   // Calculate coupon discount
@@ -175,7 +216,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     couponDiscount: finalCouponDiscount,
     bulkDiscountTotal,
     grandTotal,
-    isInCart // Add isInCart to the context value
+    isInCart
   };
   
   return (

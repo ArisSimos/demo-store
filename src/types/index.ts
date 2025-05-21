@@ -18,6 +18,14 @@ export interface Product {
   narrator?: string; // For audiobooks
   bulkDiscount?: BulkDiscount; // New field for bulk discounts
   rating?: number; // Added rating property
+  rentalOptions?: RentalOption[]; // Added rental options
+}
+
+export interface RentalOption {
+  id: string;
+  durationDays: number; // Duration in days
+  price: number; // Rental price
+  label: string; // Display label (e.g., "7 Days", "30 Days")
 }
 
 export interface BulkDiscount {
@@ -28,6 +36,10 @@ export interface BulkDiscount {
 export interface CartItem {
   product: Product;
   quantity: number;
+  isRental?: boolean; // Is this a rental or purchase
+  rentalOptionId?: string; // Selected rental option ID
+  rentalDuration?: number; // Duration in days
+  rentalPrice?: number; // Price for the rental
 }
 
 export interface Category {

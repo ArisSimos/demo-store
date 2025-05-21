@@ -11,6 +11,7 @@ import { useEmailReceipt } from '@/hooks/useEmailReceipt';
 import OrderSummary from '@/components/checkout/OrderSummary';
 import CheckoutForm from '@/components/checkout/CheckoutForm';
 import CheckoutComplete from '@/components/checkout/CheckoutComplete';
+import { CartItem } from '@/types';
 
 const CheckoutPage: React.FC = () => {
   const { items, subtotal, grandTotal, clearCart } = useCart();
@@ -20,6 +21,7 @@ const CheckoutPage: React.FC = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [email, setEmail] = useState('');
   const [sendReceipt, setSendReceipt] = useState(true);
+  const [completedItems, setCompletedItems] = useState<CartItem[]>([]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +36,9 @@ const CheckoutPage: React.FC = () => {
     }
     
     setIsProcessing(true);
+    
+    // Store current items for completed order screen
+    setCompletedItems([...items]);
     
     // Simulate payment processing
     setTimeout(async () => {
@@ -61,7 +66,13 @@ const CheckoutPage: React.FC = () => {
   };
 
   if (isComplete) {
-    return <CheckoutComplete email={email} sendReceipt={sendReceipt} />;
+    return (
+      <CheckoutComplete 
+        email={email} 
+        sendReceipt={sendReceipt}
+        items={completedItems}
+      />
+    );
   }
 
   return (

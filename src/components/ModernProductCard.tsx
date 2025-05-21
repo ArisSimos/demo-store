@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Heart } from 'lucide-react';
+import { ShoppingCart, Heart, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useWishlist } from '@/context/WishlistContext';
@@ -20,6 +20,7 @@ const ModernProductCard: React.FC<ProductCardProps> = ({ product, index = 0 }) =
   const { addToWishlist, isInWishlist, removeFromWishlist } = useWishlist();
   const { toast } = useToast();
   const category = product.category ? getCategoryById(product.category) : null;
+  const isRentable = product.rentalOptions && product.rentalOptions.length > 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -76,6 +77,13 @@ const ModernProductCard: React.FC<ProductCardProps> = ({ product, index = 0 }) =
           {product.salePrice && (
             <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
               SALE
+            </div>
+          )}
+          
+          {isRentable && (
+            <div className="absolute top-3 left-3 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md flex items-center">
+              <Clock size={10} className="mr-1" />
+              RENTABLE
             </div>
           )}
           

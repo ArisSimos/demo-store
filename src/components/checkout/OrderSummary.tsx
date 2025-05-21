@@ -2,6 +2,7 @@
 import React from 'react';
 import { Separator } from "@/components/ui/separator";
 import { CartItem } from '@/types';
+import { Clock } from 'lucide-react';
 
 interface OrderSummaryProps {
   items: CartItem[];
@@ -15,12 +16,23 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ items, subtotal, grandTotal
       <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
       <div className="space-y-3 mb-4">
         {items.map((item) => (
-          <div key={item.product.id} className="flex justify-between">
+          <div key={`${item.product.id}-${item.isRental ? item.rentalOptionId : 'purchase'}`} className="flex justify-between">
             <div>
               <span className="font-medium">{item.quantity} x </span>
               <span>{item.product.name}</span>
+              {item.isRental && item.rentalDuration && (
+                <div className="text-xs flex items-center text-muted-foreground mt-1">
+                  <Clock className="h-3 w-3 mr-1" />
+                  {item.rentalDuration} day rental
+                </div>
+              )}
             </div>
-            <span>${((item.product.salePrice || item.product.price) * item.quantity).toFixed(2)}</span>
+            <span>
+              ${((item.isRental && item.rentalPrice) 
+                ? item.rentalPrice * item.quantity
+                : (item.product.salePrice || item.product.price) * item.quantity
+              ).toFixed(2)}
+            </span>
           </div>
         ))}
       </div>

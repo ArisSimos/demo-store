@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, BookOpen, Heart, Check } from 'lucide-react';
+import { ShoppingCart, BookOpen, Heart, Check, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
@@ -42,6 +42,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showWishlistButton =
   };
   
   const productInCart = isInCart(product.id);
+  const isRentable = product.rentalOptions && product.rentalOptions.length > 0;
   
   return (
     <div 
@@ -83,6 +84,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showWishlistButton =
             <div className="absolute top-2 left-2 bg-primary text-primary-foreground px-2 py-1 rounded-md text-xs font-bold flex items-center shadow-sm">
               <BookOpen size={12} className="mr-1" />
               AUDIO
+            </div>
+          )}
+          {isRentable && (
+            <div className="absolute bottom-2 left-2 bg-blue-500 text-white px-2 py-1 rounded-md text-xs font-bold flex items-center shadow-sm">
+              <Clock size={12} className="mr-1" />
+              RENTABLE
             </div>
           )}
         </div>
