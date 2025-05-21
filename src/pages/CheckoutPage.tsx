@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, CreditCard, Check, Mail } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
@@ -11,10 +10,12 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
+import { createClient } from '@supabase/supabase-js';
 
-// Initialize Supabase client
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Initialize Supabase client with environment variables
+// Make sure to provide fallback values for development
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const CheckoutPage: React.FC = () => {
@@ -29,6 +30,17 @@ const CheckoutPage: React.FC = () => {
   const sendReceiptEmail = async (recipientEmail: string, orderDetails: any) => {
     setIsSendingEmail(true);
     try {
+      // Check if Supabase URL is available
+      if (!supabaseUrl) {
+        console.error('Supabase URL is not configured');
+        toast({
+          title: "Configuration Error",
+          description: "Email service is not properly configured.",
+          variant: "destructive",
+        });
+        return false;
+      }
+      
       // Call the Supabase Edge Function to send the email
       const { data, error } = await supabase.functions.invoke('send-receipt-email', {
         body: {
