@@ -14,7 +14,7 @@ import {
 } from '../ui/alert-dialog';
 import { calculateBulkDiscount } from '@/data/productService';
 import { useCart } from '@/context/CartContext';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { CartItem as CartItemType } from '@/types';
 
 interface CartItemProps {
@@ -23,6 +23,7 @@ interface CartItemProps {
 
 const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const { updateQuantity, removeFromCart } = useCart();
+  const { toast } = useToast();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
 
