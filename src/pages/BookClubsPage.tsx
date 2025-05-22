@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -16,6 +15,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { getAllProducts } from '@/data/productService';
+import { DatePickerWithCalendar } from '@/components/book-clubs/DatePickerWithCalendar';
 
 // Sample book club data - in a real app, this would come from an API or database
 const sampleBookClubs = [
@@ -108,7 +108,7 @@ interface CreateBookClubForm {
   name: string;
   description: string;
   bookId: string;
-  meetingDate: string;
+  meetingDate: Date | undefined;
   isPublic: boolean;
 }
 
@@ -124,19 +124,28 @@ const BookClubsPage: React.FC = () => {
       name: '',
       description: '',
       bookId: '',
-      meetingDate: '',
+      meetingDate: undefined,
       isPublic: true,
     }
   });
 
   const handleCreateBookClub = (data: CreateBookClubForm) => {
+    if (!data.meetingDate) {
+      toast({
+        title: "Error",
+        description: "Please select a meeting date",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     const newBookClub: BookClub = {
       id: `club-${Date.now()}`,
       name: data.name,
       description: data.description,
       members: 1,
       currentBook: data.bookId,
-      nextMeetingDate: data.meetingDate,
+      nextMeetingDate: data.meetingDate.toISOString(),
       isPublic: data.isPublic,
       discussions: []
     };
@@ -254,7 +263,10 @@ const BookClubsPage: React.FC = () => {
                       <FormItem>
                         <FormLabel>First Meeting Date</FormLabel>
                         <FormControl>
-                          <Input type="datetime-local" {...field} />
+                          <DatePickerWithCalendar 
+                            date={field.value} 
+                            setDate={field.onChange}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

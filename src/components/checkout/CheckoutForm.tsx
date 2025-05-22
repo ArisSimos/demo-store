@@ -24,6 +24,22 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
   onSubmit,
   grandTotal
 }) => {
+  // Handlers for numeric inputs
+  const handleNumberInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+  };
+  
+  // Handler for card expiration
+  const handleExpirationInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/[^0-9]/g, '');
+    
+    if (value.length > 2) {
+      value = `${value.slice(0, 2)}/${value.slice(2, 4)}`;
+    }
+    
+    e.target.value = value;
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
       <h2 className="text-lg font-semibold mb-4">Shipping Information</h2>
@@ -55,7 +71,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">ZIP Code</label>
-            <Input required />
+            <Input 
+              required 
+              pattern="[0-9]*"
+              inputMode="numeric" 
+              onInput={handleNumberInput}
+            />
           </div>
         </div>
         
@@ -88,17 +109,36 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
         <h2 className="text-lg font-semibold mb-4 mt-8">Payment Information</h2>
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Card Number</label>
-          <Input placeholder="**** **** **** ****" required />
+          <Input 
+            placeholder="**** **** **** ****" 
+            required 
+            pattern="[0-9]*"
+            inputMode="numeric"
+            maxLength={16}
+            onInput={handleNumberInput}
+          />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div className="col-span-1">
             <label className="block text-sm font-medium mb-1">Expiration Date</label>
-            <Input placeholder="MM/YY" required />
+            <Input 
+              placeholder="MM/YY" 
+              required 
+              maxLength={5}
+              onInput={handleExpirationInput}
+            />
           </div>
           <div className="col-span-1">
             <label className="block text-sm font-medium mb-1">CVC</label>
-            <Input placeholder="123" required />
+            <Input 
+              placeholder="123" 
+              required 
+              pattern="[0-9]*"
+              inputMode="numeric"
+              maxLength={4}
+              onInput={handleNumberInput}
+            />
           </div>
         </div>
         

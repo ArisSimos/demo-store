@@ -27,6 +27,11 @@ const AddCouponDialog: React.FC<AddCouponDialogProps> = ({
   setNewCoupon,
   onAddCoupon
 }) => {
+  const handleNumericInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9.]/g, '');
+    setNewCoupon({...newCoupon, discountValue: parseFloat(value) || 0});
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -78,9 +83,11 @@ const AddCouponDialog: React.FC<AddCouponDialogProps> = ({
               {newCoupon.discountType === 'fixed' && <span className="mr-2">$</span>}
               <Input 
                 id="value" 
-                type="number" 
+                type="text" 
+                inputMode="decimal"
+                pattern="[0-9]*\.?[0-9]*"
                 value={newCoupon.discountValue?.toString() || ''}
-                onChange={(e) => setNewCoupon({...newCoupon, discountValue: parseFloat(e.target.value)})}
+                onChange={handleNumericInput}
               />
               {newCoupon.discountType === 'percentage' && <span className="ml-2">%</span>}
             </div>
