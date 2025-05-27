@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -26,25 +25,49 @@ const ContactPage: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    setTimeout(() => {
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Message Sent!",
+          description: "We've received your message and will respond shortly.",
+        });
+
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: ''
+        });
+      } else {
+        const data = await response.json();
+        toast({
+          title: "Error Sending Message",
+          description: data.error || "Failed to send your message. Please try again later.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error("Error sending contact form email:", error);
       toast({
-        title: "Message Sent!",
-        description: "We've received your message and will respond shortly.",
+        title: "Error Sending Message",
+        description: `Failed to send your message. Please try again later. Error: ${error.message}`,
+        variant: "destructive",
       });
-      
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: ''
-      });
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
 
   return (

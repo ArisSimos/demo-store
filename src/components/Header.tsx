@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Search, BookOpen, Ticket } from 'lucide-react';
@@ -6,7 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCart } from '@/context/CartContext';
 import { categories } from '@/data/products';
+import { useAuth } from '@/context/AuthContext';
 import UserMenu from '@/components/UserMenu';
+import SubscriptionUserMenu from '@/components/SubscriptionUserMenu';
 import HeaderNavItems from '@/components/HeaderNavItems';
 import ThemeToggle from '@/components/ThemeToggle';
 
@@ -15,6 +16,7 @@ const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [scrolled, setScrolled] = useState(false);
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -108,14 +110,14 @@ const Header: React.FC = () => {
                 className="absolute right-2 top-1/2 transform -translate-y-1/2"
                 aria-label="Submit search"
               >
-                <Search className="h-4 w-4 text-muted-foreground" />
+                <Search className="h-4 w-4 text-foreground" />
               </button>
             </form>
             
             <ThemeToggle />
             
             <Link to="/cart" className="relative p-1.5 hover:bg-muted/50 rounded-full transition-colors" aria-label="View cart">
-              <ShoppingCart className="h-5 w-5" />
+              <ShoppingCart className="h-5 w-5 text-foreground" />
               {totalItems > 0 && (
                 <span className="absolute -top-2 -right-2 flex items-center justify-center w-5 h-5 bg-primary text-primary-foreground text-xs font-bold rounded-full animate-scale-in">
                   {totalItems}
@@ -123,7 +125,11 @@ const Header: React.FC = () => {
               )}
             </Link>
             
-            <UserMenu />
+            {isAuthenticated ? (
+              <SubscriptionUserMenu />
+            ) : (
+              <UserMenu />
+            )}
             
             <Button
               variant="ghost"
@@ -133,7 +139,7 @@ const Header: React.FC = () => {
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileMenuOpen}
             >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {mobileMenuOpen ? <X className="h-5 w-5 text-foreground" /> : <Menu className="h-5 w-5 text-foreground" />}
             </Button>
           </div>
         </div>
@@ -161,23 +167,23 @@ const Header: React.FC = () => {
                 className="absolute right-3 top-1/2 transform -translate-y-1/2"
                 aria-label="Submit search"
               >
-                <Search className="h-4 w-4 text-muted-foreground" />
+                <Search className="h-4 w-4 text-foreground" />
               </button>
             </form>
             <Link to="/" 
-              className="py-2 text-sm font-medium transition-colors hover:text-primary"
+              className="py-2 text-sm font-medium transition-colors hover:text-primary text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               Home
             </Link>
             <div className="py-2">
-              <p className="text-sm font-medium mb-1">Categories</p>
+              <p className="text-sm font-medium mb-1 text-foreground">Categories</p>
               <div className="ml-2 flex flex-col space-y-2">
                 {categories.map((category) => (
                   <Link
                     key={category.id}
                     to={`/category/${category.slug}`}
-                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                    className="text-sm text-foreground transition-colors hover:text-primary"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {category.name}
@@ -186,38 +192,38 @@ const Header: React.FC = () => {
               </div>
             </div>
             <Link to="/coupons"
-              className="py-2 text-sm font-medium flex items-center transition-colors hover:text-primary"
+              className="py-2 text-sm font-medium flex items-center transition-colors hover:text-primary text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <Ticket className="h-4 w-4 mr-1" />
+              <Ticket className="h-4 w-4 mr-1 text-foreground" />
               Deals & Coupons
             </Link>
             <Link to="/reading-lists" 
-              className="py-2 text-sm font-medium transition-colors hover:text-primary"
+              className="py-2 text-sm font-medium transition-colors hover:text-primary text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               Reading Lists
             </Link>
             <Link to="/bundles" 
-              className="py-2 text-sm font-medium transition-colors hover:text-primary"
+              className="py-2 text-sm font-medium transition-colors hover:text-primary text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               Book Bundles
             </Link>
             <Link to="/wishlist" 
-              className="py-2 text-sm font-medium transition-colors hover:text-primary"
+              className="py-2 text-sm font-medium transition-colors hover:text-primary text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               Wishlist
             </Link>
             <Link to="/about" 
-              className="py-2 text-sm font-medium transition-colors hover:text-primary"
+              className="py-2 text-sm font-medium transition-colors hover:text-primary text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               About
             </Link>
             <Link to="/contact" 
-              className="py-2 text-sm font-medium transition-colors hover:text-primary"
+              className="py-2 text-sm font-medium transition-colors hover:text-primary text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               Contact
