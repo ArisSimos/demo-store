@@ -5,7 +5,7 @@ import { BookOpen, Mail, MapPin, Phone } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+
 
 const AboutPage: React.FC = () => {
   return (

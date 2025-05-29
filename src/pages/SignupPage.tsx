@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { LogIn } from "lucide-react";
+import { UserPlus } from "lucide-react";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -20,43 +20,59 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const loginSchema = z.object({
+const signupSchema = z.object({
+  name: z.string().min(2, { message: "Name is required" }),
   email: z.string().email({ message: "Please enter a valid email address" }),
   password: z.string().min(8, { message: "Password must be at least 8 characters" }),
 });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type SignupFormValues = z.infer<typeof signupSchema>;
 
-const LoginPage = () => {
-  const { login } = useAuth();
+const SignupPage = () => {
+const auth = useAuth();
+const signup = auth?.signup;
   const navigate = useNavigate();
-  
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+
+  const form = useForm<SignupFormValues>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
   });
-  
-  const onSubmit = async (values: LoginFormValues) => {
-    const success = await login(values.email, values.password);
+
+  const onSubmit = async (values: SignupFormValues) => {
+    const success = await signup(values.email, values.password, values.name);
     if (success) {
       navigate("/");
     }
   };
-  
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center">Sign Up</CardTitle>
           </CardHeader>
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="email"
@@ -70,7 +86,6 @@ const LoginPage = () => {
                     </FormItem>
                   )}
                 />
-                
                 <FormField
                   control={form.control}
                   name="password"
@@ -84,28 +99,21 @@ const LoginPage = () => {
                     </FormItem>
                   )}
                 />
-                
                 <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? (
-                    "Logging in..."
+                    "Signing up..."
                   ) : (
                     <>
-                      <LogIn className="mr-2 h-4 w-4" />
-                      Login
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Sign Up
                     </>
                   )}
                 </Button>
-                
                 <div className="text-center text-sm text-muted-foreground">
-                  <p className="mt-2">Demo Accounts:</p>
-                  <p>User: user@example.com / password123</p>
-                  <p>Admin: admin@example.com / admin123</p>
-                  <p className="mt-4">
-                    Don't have an account?{" "}
-                    <a href="/signup" className="text-primary hover:underline">
-                      Sign up
-                    </a>
-                  </p>
+                  Already have an account?{" "}
+                  <a href="/login" className="text-primary hover:underline">
+                    Login
+                  </a>
                 </div>
               </form>
             </Form>
@@ -117,4 +125,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default SignupPage;

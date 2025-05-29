@@ -1,0 +1,63 @@
+@baseUrl = http://localhost:3000
+@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdHVzZXIiLCJpYXQiOjE3NDI2MDE4OTksImV4cCI6MTc0MjYwNTQ5OX0.5pKMMWrgMZBLMcpM4j2EVRdlroH79EaP9hZzbi-1B4o
+
+### Authenticate and store token
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "username": "testuser"
+}
+
+### Get all books (No limit → returns everything)
+GET {{baseUrl}}/books
+Accept: application/json
+
+### Get books in a range (first 5 books)
+GET {{baseUrl}}/books?limit=5&offset=0
+Accept: application/json
+
+### Get next 5 books (pagination example)
+GET {{baseUrl}}/books?limit=5&offset=5
+Accept: application/json
+
+### Get a book by UUID (replace with actual UUID)
+GET {{baseUrl}}/books/904aba0d-feee-11ef-83c2-0242ac190002
+Accept: application/json
+
+### Create a new book
+POST {{baseUrl}}/books
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "title": "The Silent Patient",
+  "author": "Alex Michaelides",
+  "published_year": 2019,
+  "genre": "Psychological Thriller"
+}
+
+### Update a book (replace `{uuid_here}` with actual UUID)
+PUT {{baseUrl}}/books/b4b37ba7-5202-4617-a83d-7500b1bb3d75
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "title": "The Silent Patient - Updated",
+  "author": "Alex Michaelides",
+  "published_year": 2019,
+  "genre": "Thriller"
+}
+
+### Delete a book (replace `{uuid_here}` with actual UUID)
+DELETE {{baseUrl}}/books/b4b37ba7-5202-4617-a83d-7500b1bb3d75
+Authorization: {{token}}
+Accept: application/json
+
+### Test newsletter subscription
+POST http://localhost:8080/api/newsletter
+Content-Type: application/json
+
+{
+  "email": "arissimos2004@gmail.com"
+}

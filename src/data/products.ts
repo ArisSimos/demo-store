@@ -362,3 +362,27 @@ export const calculateBulkDiscount = (product: Product, quantity: number): numbe
   }
   return 0;
 };
+
+export async function getAllProducts() {
+  const res = await fetch('http://localhost:8080/api/products');
+  return res.json();
+}
+
+// --- Supabase fetchEmails utility ---
+const API_URL = 'https://qjsgfrifkbeeqnzuhjse.supabase.co';
+const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqc2dmcmlma2JlZXFuenVoanNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1MTQyODEsImV4cCI6MjA2NDA5MDI4MX0.rkE7yQhZoW6IBHuVJGyt8jglUXeoWYuc83BnzgZrHSQ';
+
+export async function fetchEmails() {
+  const response = await fetch(`${API_URL}/rest/v1/users?select=email`, {
+    headers: {
+      apikey: API_KEY,
+      Authorization: `Bearer ${API_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    }
+  });
+
+  const data = await response.json();
+  console.log('Emails:', data);
+  return data;
+}
