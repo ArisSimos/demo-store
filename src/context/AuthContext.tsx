@@ -1,27 +1,17 @@
-
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { User, AuthContextType } from "@/types/auth";
+import { User, AuthContextType } from "@/data/auth";
 import { useToast } from "@/hooks/use-toast";
 
-// Mock user data - in a real app, this would come from a backend
-const MOCK_USERS = [
-  {
-    id: "1",
-    email: "user@example.com",
-    password: "password123",
-    name: "Regular User",
-    isAdmin: false
-  },
-  {
-    id: "2",
-    email: "admin@example.com",
-    password: "admin123",
-    name: "Admin User",
-    isAdmin: true
-  }
-];
+// Mock admin user (only admin is hardcoded)
+const ADMIN_USER = {
+  id: "2",
+  email: "admin@example.com",
+  password: "admin123",
+  name: "Admin User",
+  isAdmin: true
+};
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -37,22 +27,78 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false);
   }, []);
 
+  // Helper to get all customer accounts from localStorage
+  const getCustomerAccounts = (): User[] => {
+    const accounts = localStorage.getItem("bookhavenCustomers");
+    return accounts ? JSON.parse(accounts) : [];
+  };
+
+  // Helper to save all customer accounts to localStorage
+  const saveCustomerAccounts = (accounts: User[]) => {
+    localStorage.setItem("bookhavenCustomers", JSON.stringify(accounts));
+  };
+
+  // Sign up a new customer account
+  const signup = async (email: string, password: string, name: string) => {
+    // Prevent admin email from being used
+    if (email === ADMIN_USER.email) {
+      toast({
+        title: "Signup failed",
+        description: "This email is reserved for admin.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    const accounts = getCustomerAccounts();
+    if (accounts.find((u) => u.email === email)) {
+      toast({
+        title: "Signup failed",
+        description: "An account with this email already exists.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    const newUser: User = {
+      id: String(Date.now()),
+      email,
+      name,
+      isAdmin: false,
+    };
+    accounts.push({ ...newUser, password }); // Store password for demo only
+    saveCustomerAccounts(accounts);
+    setUser(newUser);
+    localStorage.setItem("bookhavenUser", JSON.stringify(newUser));
+    toast({
+      title: "Signup successful",
+      description: `Welcome, ${name}!`,
+    });
+    return true;
+  };
+
+  // Login for both admin and customers
   const login = async (email: string, password: string) => {
-    // This is a mock implementation - in a real app, this would be an API call
-    const foundUser = MOCK_USERS.find(
-      (u) => u.email === email && u.password === password
-    );
-    
-    if (foundUser) {
-      const { password, ...userWithoutPassword } = foundUser;
+    // Admin login
+    if (email === ADMIN_USER.email && password === ADMIN_USER.password) {
+      const { password, ...userWithoutPassword } = ADMIN_USER;
       setUser(userWithoutPassword);
       localStorage.setItem("bookhavenUser", JSON.stringify(userWithoutPassword));
-      
       toast({
         title: "Login successful",
         description: `Welcome back, ${userWithoutPassword.name}!`,
       });
-      
+      return true;
+    }
+    // Customer login
+    const accounts = getCustomerAccounts();
+    const foundUser = accounts.find((u) => u.email === email && u.password === password);
+    if (foundUser) {
+      const { password, ...userWithoutPassword } = foundUser;
+      setUser(userWithoutPassword);
+      localStorage.setItem("bookhavenUser", JSON.stringify(userWithoutPassword));
+      toast({
+        title: "Login successful",
+        description: `Welcome back, ${userWithoutPassword.name}!`,
+      });
       return true;
     } else {
       toast({
@@ -76,12 +122,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        user,
-        isAuthenticated: !!user,
-        isLoading,
-        login,
-        logout
-      }}
+      user,
+      isAuthenticated: !!user,
+      isLoading,
+      login,
+      logout,
+      signup, // expose signup
+      } as AuthContextType}
     >
       {children}
     </AuthContext.Provider>
@@ -89,9 +136,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
+  const context = React.useContext(AuthContext);
   if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }
+

@@ -1,24 +1,6 @@
-# Welcome to your Lovable project
+# Welcome to BookHaven-Demo project
 
 ## Project info
-
-**URL**: https://lovable.dev/projects/b29f8488-d3e0-4ddd-87ac-a7910180ce90
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/b29f8488-d3e0-4ddd-87ac-a7910180ce90) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
 Follow these steps:
 
@@ -60,14 +42,32 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
+## How do I get to the main branch and start the dev server?
 
-Simply open [Lovable](https://lovable.dev/projects/b29f8488-d3e0-4ddd-87ac-a7910180ce90) and click on Share -> Publish.
+1. **Open your terminal** and navigate to your project directory:
+   ```sh
+   cd <YOUR_PROJECT_NAME>
+   ```
 
-## Can I connect a custom domain to my Lovable project?
+2. **Switch to the main branch** (if you're not already on it):
+   ```sh
+   git checkout main
+   ```
 
-Yes, you can!
+3. **Install dependencies** (if you haven't already):
+   ```sh
+   npm install
+   ```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+4. **Start the development server**:
+   ```sh
+   npm run dev
+   ```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This will start your app locally, usually at [http://localhost:5173](http://localhost:5173) or a similar port.
+
+## MailerSend Domain Information
+
+**Domain**: test-zxk54v87mm6ljy6v.mlsender.net  
+**Domain ID**: ywj2lpnxq61g7oqz  
+**Domain Created**: 2025-05-26 18:31:03

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -7,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { fetchEmails } from '@/data/products'; // adjust path if needed
 
 const ContactPage: React.FC = () => {
   const { toast } = useToast();
@@ -26,26 +26,66 @@ const ContactPage: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    setTimeout(() => {
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Message Sent!",
+          description: "We've received your message and will respond shortly.",
+        });
+
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: ''
+        });
+      } else {
+        type ErrorResponse = { error?: string };
+        let data: ErrorResponse = {};
+        try {
+          // Try to parse JSON only if there is content
+          const text = await response.text();
+          data = text ? JSON.parse(text) : {};
+        } catch (e) {
+          data = {};
+        }
+        // Log the raw response for debugging
+        console.error('Contact form error response:', data, response.status, response.statusText);
+        toast({
+          title: "Error Sending Message",
+          description: data.error || "Failed to send your message. Please try again later.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: unknown) {
+      console.error("Error sending contact form email:", error);
       toast({
-        title: "Message Sent!",
-        description: "We've received your message and will respond shortly.",
+        title: "Error Sending Message",
+        description: `Failed to send your message. Please try again later. Error: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        variant: "destructive",
       });
-      
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: ''
-      });
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
+
+  React.useEffect(() => {
+    fetchEmails();
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">

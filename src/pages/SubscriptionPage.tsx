@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Check, X, CreditCard, Calendar, BookHeart, Truck } from 'lucide-react';
 import Header from '@/components/Header';
@@ -34,17 +33,9 @@ const SubscriptionPage: React.FC = () => {
       navigate('/login');
       return;
     }
-    
-    setIsProcessing(true);
-    const success = await subscribe(plan.id);
-    setIsProcessing(false);
-    
-    if (success) {
-      toast({
-        title: "Subscription Active",
-        description: `You're now subscribed to the ${plan.name} plan!`,
-      });
-    }
+
+    // Redirect to checkout with the plan ID as a query parameter
+    navigate(`/checkout?plan=${plan.id}`);
   };
   
   const handleCancel = async () => {

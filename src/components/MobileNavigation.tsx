@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Search, Heart, ShoppingCart, User, BookOpen } from 'lucide-react';
@@ -70,7 +69,7 @@ const MobileNavigation: React.FC = () => {
                 className={`flex flex-col items-center justify-center px-2 py-1 rounded-md transition-colors ${
                   isActive(item.path) 
                     ? 'text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-800/50' 
-                    : 'text-muted-foreground hover:text-foreground'
+                    : 'text-foreground hover:text-primary'
                 }`}
               >
                 <div className="relative">

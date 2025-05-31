@@ -1,17 +1,18 @@
-
 import React, { useState } from 'react';
 import { CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 interface CheckoutFormProps {
   email: string;
   setEmail: (email: string) => void;
   sendReceipt: boolean;
-  setSendReceipt: (send: boolean) => void;
+  setSendReceipt: (sendReceipt: boolean) => void;
   isProcessing: boolean;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.FormEvent) => Promise<void>;
   grandTotal: number;
 }
 
@@ -24,20 +25,25 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
   onSubmit,
   grandTotal
 }) => {
+  const [cardNumber, setCardNumber] = useState('');
+  const [expiryDate, setExpiryDate] = useState<Date | null>(null);
+
   // Handlers for numeric inputs
   const handleNumberInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.target.value = e.target.value.replace(/[^0-9]/g, '');
   };
-  
-  // Handler for card expiration
-  const handleExpirationInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/[^0-9]/g, '');
-    
-    if (value.length > 2) {
-      value = `${value.slice(0, 2)}/${value.slice(2, 4)}`;
-    }
-    
-    e.target.value = value;
+
+  // Format card number with spaces after every 4 digits
+  const formatCardNumber = (value: string) => {
+    const cleanedValue = value.replace(/\D/g, '');
+    const formattedValue = cleanedValue.replace(/(\d{4})/g, '$1 ').trim();
+    return formattedValue;
+  };
+
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    const formattedValue = formatCardNumber(inputValue);
+    setCardNumber(formattedValue);
   };
 
   return (
@@ -110,23 +116,27 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">Card Number</label>
           <Input 
-            placeholder="**** **** **** ****" 
-            required 
-            pattern="[0-9]*"
+            placeholder="**** **** **** ****"
+            required
+            pattern="[0-9 ]*" // Allow numbers and spaces
             inputMode="numeric"
-            maxLength={16}
-            onInput={handleNumberInput}
+            maxLength={19} // Max length with spaces
+            value={cardNumber}
+            onChange={handleCardNumberChange}
           />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div className="col-span-1">
             <label className="block text-sm font-medium mb-1">Expiration Date</label>
-            <Input 
-              placeholder="MM/YY" 
-              required 
-              maxLength={5}
-              onInput={handleExpirationInput}
+            <DatePicker
+              selected={expiryDate}
+              onChange={(date: Date | null) => setExpiryDate(date)}
+              dateFormat="MM/yy"
+              showMonthYearPicker
+              showFullMonthYearPicker
+              placeholderText="MM/YY"
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             />
           </div>
           <div className="col-span-1">
@@ -149,10 +159,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
         >
           {isProcessing ? (
             <span className="flex items-center">
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
               Processing...
             </span>
           ) : (
