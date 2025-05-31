@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -7,25 +6,39 @@ import Footer from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { useEmailReceipt } from '@/hooks/useEmailReceipt';
 import OrderSummary from '@/components/checkout/OrderSummary';
 import CheckoutForm from '@/components/checkout/CheckoutForm';
 import CheckoutComplete from '@/components/checkout/CheckoutComplete';
 import { CartItem } from '@/types';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const CheckoutPage: React.FC = () => {
-  const { items, subtotal, grandTotal, clearCart, bulkDiscountTotal, membershipDiscountTotal, couponDiscount } = useCart();
+  const { items, subtotal, grandTotal, clearCart, bulkDiscountTotal, couponDiscount } = useCart();
   const { toast } = useToast();
-  const { sendReceiptEmail } = useEmailReceipt();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [email, setEmail] = useState('');
-  const [sendReceipt, setSendReceipt] = useState(true);
+  const [sendReceipt, setSendReceipt] = useState(false);
   const [completedItems, setCompletedItems] = useState<CartItem[]>([]);
-  
+  const [cardNumber, setCardNumber] = useState('');
+  const [expiryDate, setExpiryDate] = useState<Date | null>(null);
+
+  const formatCardNumber = (value: string) => {
+    const cleanedValue = value.replace(/\D/g, '');
+    const formattedValue = cleanedValue.replace(/(\d{4})/g, '$1 ').trim();
+    return formattedValue;
+  };
+
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    const formattedValue = formatCardNumber(inputValue);
+    setCardNumber(formattedValue);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (sendReceipt && !email) {
       toast({
         title: "Email Required",
@@ -34,30 +47,58 @@ const CheckoutPage: React.FC = () => {
       });
       return;
     }
-    
+
     setIsProcessing(true);
-    
-    // Store current items for completed order screen
+
     setCompletedItems([...items]);
-    
-    // Simulate payment processing
+
     setTimeout(async () => {
       setIsProcessing(false);
       setIsComplete(true);
-      
+
       // Send real email if user requested it
       if (sendReceipt && email) {
-        const emailSent = await sendReceiptEmail(email, items, subtotal, grandTotal);
-        if (emailSent) {
+        try {
+          // Compose product names and order IDs for the email
+          const productNames = items.map((item) => item.product.name).join(', ');
+          // Ensure orderId is always a non-empty string
+          let orderId = items.map((item) => item.product.isbn).filter(Boolean).join(', ');
+          if (!orderId || orderId.replace(/,|\s/g, '') === '') {
+            orderId = `ORD-${Date.now()}`;
+          }
+
+          // Call your backend API to send the purchase email
+          const response = await fetch('/purchase', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email,
+              productName: productNames,
+              orderId,
+            })
+          });
+          if (response.ok) {
+            toast({
+              title: "Receipt Sent",
+              description: `A receipt has been sent to ${email}`
+            });
+          } else {
+            toast({
+              title: "Receipt Failed",
+              description: `Failed to send receipt to ${email}`
+            });
+          }
+        } catch (err) {
           toast({
-            title: "Receipt Sent",
-            description: `A receipt has been sent to ${email}`
+            title: "Email Failed",
+            description: "Could not send receipt email.",
+            variant: "destructive"
           });
         }
       }
-      
+
       clearCart();
-      
+
       toast({
         title: "Order placed successfully",
         description: "Thank you for your purchase!",
@@ -109,7 +150,6 @@ const CheckoutPage: React.FC = () => {
                 subtotal={subtotal}
                 grandTotal={grandTotal}
                 bulkDiscountTotal={bulkDiscountTotal}
-                membershipDiscountTotal={membershipDiscountTotal}
                 couponDiscount={couponDiscount}
               />
             </div>

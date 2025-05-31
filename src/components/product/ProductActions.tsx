@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { Minus, Plus, Heart, ShoppingCart, Share2, Percent, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Product, RentalOption } from '@/types';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
+import { useSubscription } from '@/context/SubscriptionContext';
 import { toast } from 'sonner';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -23,6 +23,7 @@ const ProductActions: React.FC<ProductActionsProps> = ({ product }) => {
   
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { isSubscribed, remainingRentals, setRemainingRentals } = useSubscription();
   
   const incrementQuantity = () => {
     setQuantity(prev => prev + 1);
@@ -41,14 +42,31 @@ const ProductActions: React.FC<ProductActionsProps> = ({ product }) => {
     } else if (purchaseType === 'rent' && selectedRentalOption) {
       const rentalOption = product.rentalOptions?.find(option => option.id === selectedRentalOption);
       if (rentalOption) {
-        addToCart(product, quantity, {
+        let rentalPrice = rentalOption.price;
+
+
+        if (isSubscribed && remainingRentals > 0) {
+          rentalPrice = 0;
+          setRemainingRentals(remainingRentals - 1);
+        }
+
+        addToCart(product, 1, {
           isRental: true,
           rentalOptionId: rentalOption.id,
           rentalDuration: rentalOption.durationDays,
-          rentalPrice: rentalOption.price
+          rentalPrice,
         });
         toast.success(`${product.name} added to cart for ${rentalOption.label} rental`);
       }
+    } else {
+      // For membership products, add directly to cart with quantity 1
+      addToCart(product, 1, { 
+        isRental: false, 
+        rentalOptionId: '', 
+        rentalDuration: 0, 
+        rentalPrice: 0, 
+      });
+      toast.success(`${product.name} membership added to cart`);
     }
   };
   

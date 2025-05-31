@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Newsletter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
+    label { display: block; margin-top: 1rem; }
+    textarea, input { width: 100%; }
+    button { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Αποστολή Newsletter</h1>
+  <form id="newsletterForm">
+    <label>
+      Emails (χωρισμένα με κόμμα):
+      <textarea name="emails" rows="3" required></textarea>
+    </label>
+    <label>
+      Θέμα:
+      <input type="text" name="subject" required />
+    </label>
+    <label>
+      HTML Περιεχόμενο:
+      <textarea name="html" rows="8" required></textarea>
+    </label>
+    <button type="submit">Αποστολή</button>
+  </form>
+  <div id="result"></div>
+  <script>
+    document.getElementById('newsletterForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const emails = form.emails.value.split(',').map(e => e.trim()).filter(Boolean);
+      const subject = form.subject.value;
+      const html = form.html.value;
+      const res = await fetch('/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emails, subject, html })
+      });
+      document.getElementById('result').textContent = res.ok ? 'Newsletter sent!' : 'Error sending newsletter';
+    };
+  </script>
+</body>
+</html>

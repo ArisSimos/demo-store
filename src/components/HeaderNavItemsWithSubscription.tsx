@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
@@ -34,7 +33,7 @@ const HeaderNavItemsWithSubscription = () => {
             "flex items-center text-sm font-medium transition-colors hover:text-primary",
             pathname === item.path ? 
               "text-primary font-semibold" : 
-              item.highlight ? item.highlight : "text-muted-foreground"
+              item.highlight ? item.highlight : "text-foreground"
           )}
         >
           {item.name}

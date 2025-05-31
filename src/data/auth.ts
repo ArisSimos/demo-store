@@ -1,12 +1,13 @@
-
-export interface User {
+export type User = {
   id: string;
   email: string;
   name: string;
   isAdmin: boolean;
-}
+  password?: string; // Optional password for demo purposes
+};
 
 export interface AuthContextType {
+  signup: (email: string, password: string, name: string) => Promise<boolean>;
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;

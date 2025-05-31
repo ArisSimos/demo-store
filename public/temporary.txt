@@ -1,0 +1,57 @@
+  // Calculate membership discount (only for purchase items, not rentals)
+  const membershipDiscountTotal = isSubscribed && currentTier ? items.reduce((total, item) => {
+    if (!item.isRental) {
+      const regularPrice = item.product.salePrice || item.product.price;
+      const discountedPrice = calculatePriceWithSubscription(regularPrice, currentTier);
+      const discount = (regularPrice - discountedPrice) * item.quantity;
+      return total + discount;
+    }
+    return total;
+  }, 0) : 0;
+  
+        
+      // Check if this is a free rental from membership
+      let useFreeRental = false;
+      if (isRental && isSubscribed && remainingRentals > 0) {
+        useFreeRental = true;
+        setRemainingRentals(remainingRentals - 1);
+      }
+      
+       // Calculate membership discount (only for purchase items, not rentals)
+  const membershipDiscountTotal = isSubscribed && currentTier ? items.reduce((total, item) => {
+    if (!item.isRental) {
+      const regularPrice = item.product.salePrice || item.product.price;
+      const discountedPrice = calculatePriceWithSubscription(regularPrice, currentTier);
+      const discount = (regularPrice - discountedPrice) * item.quantity;
+      return total + discount;
+    }
+    return total;
+  }, 0) : 0;
+
+  else {
+        // New item
+        const rentalPrice = useFreeRental ? 0 : rentalInfo?.rentalPrice;
+        
+        const newItem: CartItem = {
+          product,
+          quantity,
+          ...(isRental ? {
+            isRental: true,
+            rentalOptionId: rentalInfo.rentalOptionId,
+            rentalDuration: rentalInfo.rentalDuration,
+            rentalPrice
+          } : {})
+        };
+        
+        if (useFreeRental) {
+          toast('Added to cart', {
+            description: `${product.name} (free rental) added to your cart.`
+          });
+        } else {
+          toast('Added to cart', {
+            description: `${product.name} ${isRental ? '(rental)' : ''} added to your cart.`
+          });
+        }
+        
+        return [...prevItems, newItem];
+      }

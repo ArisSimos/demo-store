@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Separator } from "@/components/ui/separator";
 import { CartItem } from '@/types';
@@ -32,7 +31,11 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
           <div key={`${item.product.id}-${item.isRental ? item.rentalOptionId : 'purchase'}`} className="flex justify-between">
             <div>
               <span className="font-medium">{item.quantity} x </span>
-              <span>{item.product.name}</span>
+              <span>
+                {item.isMembership
+                  ? <span className="text-amber-700 font-semibold">{item.product.name}</span>
+                  : item.product.name}
+              </span>
               {item.isRental && item.rentalDuration && (
                 <div className="text-xs flex items-center text-muted-foreground mt-1">
                   <Clock className="h-3 w-3 mr-1" />

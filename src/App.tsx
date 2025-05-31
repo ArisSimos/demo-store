@@ -32,6 +32,7 @@ import SearchPage from "./pages/SearchPage";
 import VirtualBookshelfPage from "./pages/VirtualBookshelfPage";
 import BookClubsPage from "./pages/BookClubsPage";
 import SubscriptionPage from "./pages/SubscriptionPage";
+import SignupPage from "./pages/SignupPage";
 
 // Scroll Progress Indicator
 const ScrollProgress = () => {
@@ -125,6 +126,7 @@ const AppContent = () => {
           <Route path="/bookshelf" element={<VirtualBookshelfPage />} />
           <Route path="/book-clubs" element={<BookClubsPage />} />
           <Route path="/subscription" element={<SubscriptionPage />} />
+          <Route path="/signup" element={<SignupPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </PageTransition>
@@ -139,17 +141,17 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <SubscriptionProvider>
-            <WishlistProvider>
-              <CartProvider>
+          <WishlistProvider>
+            <CartProvider>
+              <SubscriptionProvider>
                 <TooltipProvider>
                   <Toaster />
                   <Sonner position="top-right" closeButton expand theme="system" />
                   <AppContent />
                 </TooltipProvider>
-              </CartProvider>
-            </WishlistProvider>
-          </SubscriptionProvider>
+              </SubscriptionProvider>
+            </CartProvider>
+          </WishlistProvider>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>

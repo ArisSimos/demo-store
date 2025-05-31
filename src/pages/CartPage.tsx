@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Ticket, Sparkles } from 'lucide-react';
@@ -11,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { validateCoupon } from '@/data/products';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { useSubscription } from '@/context/SubscriptionContext';
+import { useMembershipDiscount } from "@/hooks/useMembershipDiscount";
 
 const CartPage: React.FC = () => {
   const { 
@@ -21,10 +20,9 @@ const CartPage: React.FC = () => {
     grandTotal, 
     applyCoupon,
     bulkDiscountTotal,
-    membershipDiscountTotal,
     couponDiscount
   } = useCart();
-  const { isSubscribed, currentTier } = useSubscription();
+  const membershipDiscountTotal = useMembershipDiscount(items);
   const [couponCode, setCouponCode] = useState('');
   const [couponError, setCouponError] = useState('');
   const { toast } = useToast();
@@ -132,15 +130,6 @@ const CartPage: React.FC = () => {
                     <span className="text-gray-700 font-semibold">Total:</span>
                     <span className="font-bold text-xl">${grandTotal.toFixed(2)}</span>
                   </div>
-                  
-                  {isSubscribed && (
-                    <div className="mt-2 pt-2 border-t border-dashed border-gray-200 text-xs text-center text-muted-foreground">
-                      <div className="flex items-center justify-center">
-                        <Sparkles className="h-3 w-3 mr-1 text-amber-500" />
-                        <span>{currentTier?.charAt(0).toUpperCase()}{currentTier?.slice(1)} Membership Benefits Applied</span>
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 {/* Coupon */}
@@ -160,22 +149,21 @@ const CartPage: React.FC = () => {
                   <Link to="/checkout">Proceed to Checkout</Link>
                 </Button>
                 
-                {!isSubscribed && (
-                  <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
-                    <div className="text-sm text-amber-800">
-                      <p className="font-medium flex items-center">
-                        <Sparkles className="h-3 w-3 mr-1" />
-                        Subscribe and save!
-                      </p>
-                      <p className="text-xs mt-1">
-                        Join our membership program to get up to 15% off on all purchases, free rentals and more.
-                      </p>
-                      <Button asChild variant="outline" size="sm" className="w-full mt-2 border-amber-300 bg-white hover:bg-amber-100">
-                        <Link to="/subscription">View Plans</Link>
-                      </Button>
-                    </div>
+                {/* Membership Promo */}
+                <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
+                  <div className="text-sm text-amber-800">
+                    <p className="font-medium flex items-center">
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      Subscribe and save!
+                    </p>
+                    <p className="text-xs mt-1">
+                      Join our membership program to get up to 15% off on all purchases, free rentals and more.
+                    </p>
+                    <Button asChild variant="outline" size="sm" className="w-full mt-2 border-amber-300 bg-white hover:bg-amber-100">
+                      <Link to="/subscription">View Plans</Link>
+                    </Button>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           )}

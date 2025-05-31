@@ -1,0 +1,1 @@
+// function to generate PDF with QR

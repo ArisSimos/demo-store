@@ -40,6 +40,7 @@ export interface CartItem {
   rentalOptionId?: string; // Selected rental option ID
   rentalDuration?: number; // Duration in days
   rentalPrice?: number; // Price for the rental
+  isMembership?: boolean; // <-- Add this line
 }
 
 export interface Category {

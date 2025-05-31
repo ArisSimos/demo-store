@@ -362,3 +362,8 @@ export const calculateBulkDiscount = (product: Product, quantity: number): numbe
   }
   return 0;
 };
+
+export async function getAllProducts() {
+  const res = await fetch('http://localhost:8080/api/products');
+  return res.json();
+}
